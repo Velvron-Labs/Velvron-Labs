@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Back hexagon (faint layer) -->
+  <polygon points="100,28 162,64 162,136 100,172 38,136 38,64"
+           stroke="#1F6FEB" stroke-width="6" fill="none" stroke-linejoin="round" stroke-opacity="0.25"/>
+  <!-- Front hexagon (main) -->
+  <polygon points="100,20 170,60 170,140 100,180 30,140 30,60"
+           stroke="#1F6FEB" stroke-width="6" fill="none" stroke-linejoin="round"/>
+  <!-- Layered V (two strokes offset for depth) -->
+  <polyline points="64,62 100,132 136,62"
+            stroke="#1F6FEB" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.95"/>
+  <polyline points="68,58 100,128 132,58"
+            stroke="#1F6FEB" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.5"/>
+</svg>

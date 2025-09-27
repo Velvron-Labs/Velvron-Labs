@@ -1,0 +1,55 @@
+# Robots.txt for Velvron Labs
+
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# Sitemap location
+Sitemap: https://velvron-labs.vercel.app/sitemap.xml
+
+# Crawl-delay to prevent overwhelming the server
+Crawl-delay: 10
+
+# Allow all search engines to index the site
+User-agent: *
+Allow: /
+
+# Special rules for search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 10
+
+# Block access to admin and login pages
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Disallow: /wp-admin/
+
+# Allow media and assets to be indexed
+User-agent: *
+Allow: /assets/
+Allow: /images/
+Allow: /fonts/
+
+# Block access to development and staging environments
+User-agent: *
+Disallow: /*?*
+Disallow: /*&*
+Disallow: /*#*
+
+# Directories to disallow
+Disallow: /private/
+Disallow: /admin/
+
+# Specific bot rules
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /

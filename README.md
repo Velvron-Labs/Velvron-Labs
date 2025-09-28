@@ -61,25 +61,25 @@ Velvron Labs is more than just a company — it's a mindset. We focus on:
 
 ## ✨ Features
 
-### Contact Form
-- Secure form submission with reCAPTCHA v2
-- Client-side validation
-- Rate limiting to prevent spam
-- Responsive design for all devices
-- Loading states and error handling
-- Email notifications via EmailJS
+### 🎨 Modern UI Components
+- **Interactive 3D Cube**: Tech stack showcase with smooth animations
+- **Responsive Navbar**: Modern navigation with mobile-friendly design
+- **Contact Section**: Professional contact form with company information
+- **Footer**: Comprehensive footer with map integration and legal links
+- **Matrix Rain Background**: Animated tech aesthetic background effect
 
-### Performance
-- Code splitting and lazy loading
-- Optimized animations
-- Responsive images
-- Modern CSS with Tailwind
+### 📱 Responsive Design
+- **Desktop Optimized**: Interactive hover effects and smooth animations
+- **Tablet & Mobile Friendly**: Touch-optimized controls and responsive layouts
+- **Adaptive Navigation**: Context-aware UI elements based on screen size
+- **Performance Focused**: Optimized animations and lazy loading
 
-### Developer Experience
-- TypeScript for type safety
-- Component-based architecture
-- Reusable UI components
-- Environment variable support
+### 🛠️ Technical Excellence
+- **Next.js 14**: Modern React framework with App Router
+- **CSS Modules**: Scoped styling for component isolation
+- **Framer Motion**: Smooth animations and transitions
+- **Lucide React**: Modern icon system
+- **TypeScript Ready**: Type-safe development environment
 
 ---
 

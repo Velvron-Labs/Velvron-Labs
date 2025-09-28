@@ -1,0 +1,122 @@
+@import 'tailwindcss';
+
+:root {
+  --foreground-rgb: 151, 157, 172;
+  --background-rgb: 0, 18, 51;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Only reset margins/padding on specific elements that cause layout issues */
+  html, body {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  html {
+    height: 100%;
+  }
+  
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-rgb));
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+  }
+  
+  #__next {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* Reset only problematic default margins and set typography */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  
+  p {
+    margin: 0;
+  }
+  
+  h1 {
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1.1;
+  }
+  
+  h2 {
+    font-size: clamp(1.875rem, 5vw, 3.75rem);
+  }
+  
+  p {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.6;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 18, 51, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0466c8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0353a4;
+}
+
+/* Animation Classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Custom Cursor */
+@media (pointer: fine) {
+  .cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #0466c8;
+  }
+  
+  .cursor-outline {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(4, 102, 200, 0.5);
+  }
+  
+  .cursor-dot,
+  .cursor-outline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 1000;
+    pointer-events: none;
+    transition: transform 0.1s ease;
+  }
+}

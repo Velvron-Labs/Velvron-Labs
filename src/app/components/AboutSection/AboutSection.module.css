@@ -54,9 +54,8 @@
 /* 3D Cube Styles */
 .cubeContainer {
   perspective: 1000px;
-  width: 100%;
-  aspect-ratio: 1;
-  max-width: 500px;
+  width: 300px;
+  height: 300px;
   margin: 0 auto;
 }
 
@@ -71,6 +70,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
 }
 
@@ -122,61 +122,105 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.1s ease-out;
-  transform: rotateX(-10deg) rotateY(15deg);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotateX(20deg) rotateY(20deg);
+  cursor: grab;
+}
+
+.cube {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.1s linear;
+}
+
+.cube.smooth {
+  transition: transform 0.5s ease-out;
 }
 
 .cubeFace {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 300px;
+  height: 300px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  align-items: center;
+  font-size: 64px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  overflow: hidden;
-}
-
-.cubeFace::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-  z-index: -1;
-  opacity: 0.3;
-  transition: all 0.3s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .cubeFace:hover {
-  transform: translateZ(20px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .techIcon {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 1rem;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .techName {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin-top: 1rem;
+  text-align: center;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Cube Face Positions */
-.face1 { transform: rotateY(0deg) translateZ(250px); }
-.face2 { transform: rotateY(90deg) translateZ(250px); }
-.face3 { transform: rotateY(180deg) translateZ(250px); }
-.face4 { transform: rotateY(-90deg) translateZ(250px); }
-.face5 { transform: rotateX(90deg) translateZ(250px); }
-.face6 { transform: rotateX(-90deg) translateZ(250px); }
+/* Face positions - updated for 300px cube */
+.face1 { 
+  background: rgba(255, 99, 132, 0.5);
+  transform: rotateY(0deg) translateZ(150px); 
+}
+.face2 { 
+  background: rgba(54, 162, 235, 0.5);
+  transform: rotateY(180deg) translateZ(150px); 
+}
+.face3 { 
+  background: rgba(255, 206, 86, 0.5);
+  transform: rotateY(90deg) translateZ(150px); 
+}
+.face4 { 
+  background: rgba(75, 192, 192, 0.5);
+  transform: rotateY(-90deg) translateZ(150px); 
+}
+.face5 { 
+  background: rgba(153, 102, 255, 0.5);
+  transform: rotateX(90deg) translateZ(150px); 
+}
+.face6 { 
+  background: rgba(255, 159, 64, 0.5);
+  transform: rotateX(-90deg) translateZ(150px); 
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 1024px) {
+  .cubeFace {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
+  .techIcon {
+    font-size: 2.5rem;
+  }
+  
+  .techName {
+    font-size: 1.1rem;
+  }
+}
 
 /* Content Styles */
 .content {
@@ -253,6 +297,7 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -289,6 +334,7 @@
   padding: 1.5rem 1rem;
   text-align: center;
   transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
 }
 

@@ -80,19 +80,27 @@ const HeroSection = () => {
     "",
     "$ npm run build",
     "> Building for production...",
-    "✓ Compiled successfully",
-    ""
+    "✓ Compiled successfully"
   ], []);
 
-  // Optimized button handlers
+  // Optimized button handlers with proper navigation
   const handleGetStarted = useCallback(() => {
-    // Add your navigation logic here
-    console.log('Get Started clicked');
+    // Navigate to contact section
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }, []);
 
   const handleLearnMore = useCallback(() => {
-    // Add your navigation logic here
-    console.log('Learn More clicked');
+    // Navigate to about/services section
+    const aboutSection = document.querySelector('[id*="about"], [id*="service"]');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Fallback: scroll down one viewport height
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    }
   }, []);
 
   return (

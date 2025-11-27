@@ -179,7 +179,7 @@ const ThreeScene = () => {
     // Start animation loop
     frameId.current = requestAnimationFrame(animate);
     
-          // Cleanup function
+    // Cleanup function
     return () => {
       // Stop animation
       if (frameId.current) {
@@ -192,12 +192,16 @@ const ThreeScene = () => {
         mountRef.current.removeEventListener('mousemove', handleMouseMove);
       }
       
-      // Clean up Three.js objects
-      if (renderer.current) {
-        if (mountRef.current && renderer.current.domElement) {
-          mountRef.current.removeChild(renderer.current.domElement);
+      // Clean up Three.js objects with null checks
+      if (renderer.current && mountRef.current) {
+        try {
+          if (renderer.current.domElement && mountRef.current.contains(renderer.current.domElement)) {
+            mountRef.current.removeChild(renderer.current.domElement);
+          }
+          renderer.current.dispose();
+        } catch (e) {
+          console.warn('Error disposing renderer:', e);
         }
-        renderer.current.dispose();
       }
       
       // Dispose geometry and material

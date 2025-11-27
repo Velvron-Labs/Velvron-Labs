@@ -121,33 +121,27 @@ export function TerminalWindow({
     return false;
   }, [content]);
 
+  // Combined effect for content changes and typing animation
   useEffect(() => {
+    // Cancel any ongoing animation
+    if (animationId.current) {
+      cancelAnimationFrame(animationId.current);
+    }
+    
     if (contentChanged) {
-      // Cancel any ongoing animation
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current);
-      }
-      
-      // Reset state
+      // Reset state when content changes
       setDisplayedLines([]);
       setCurrentLine(0);
       setCurrentChar(0);
       setIsComplete(false);
       lastContent.current = [...content];
     }
-  }, [contentChanged, content]);
 
-  // Simplified typing animation
-  useEffect(() => {
-    if (!typing || content.length === 0 || !animate) {
-      setDisplayedLines([...content]);
-      setIsComplete(true);
-      return;
-    }
-
-    if (contentChanged || displayedLines.length === 0) {
+    // Start typing animation if conditions are met
+    if (typing && content.length > 0 && animate && (contentChanged || displayedLines.length === 0)) {
       let lineIndex = 0;
       let charIndex = 0;
+      let timeoutId = null;
 
       const typeNextChar = () => {
         if (lineIndex >= content.length) {
@@ -162,6 +156,9 @@ export function TerminalWindow({
           
           setDisplayedLines(prev => {
             const newLines = [...prev];
+            while (newLines.length <= lineIndex) {
+              newLines.push('');
+            }
             newLines[lineIndex] = partialLine;
             return newLines;
           });
@@ -173,19 +170,30 @@ export function TerminalWindow({
           const isCommand = currentLineContent.startsWith('$');
           const delay = isCommand ? 50 : 30;
           
-          setTimeout(typeNextChar, delay);
+          timeoutId = setTimeout(typeNextChar, delay);
         } else {
           // Line complete, move to next line
           lineIndex++;
           charIndex = 0;
           
           // Pause between lines
-          setTimeout(typeNextChar, 300);
+          timeoutId = setTimeout(typeNextChar, 300);
         }
       };
 
       // Start typing after a short delay
-      setTimeout(typeNextChar, 500);
+      timeoutId = setTimeout(typeNextChar, 500);
+
+      // Cleanup function
+      return () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      };
+    } else if (!typing || content.length === 0 || !animate) {
+      // Show all content immediately if not animating
+      setDisplayedLines([...content]);
+      setIsComplete(true);
     }
   }, [typing, content, contentChanged, animate]);
 
@@ -226,15 +234,6 @@ export function TerminalWindow({
           ease: [0.16, 1, 0.3, 1]
         }
       } : false}
-      style={{ 
-        display: 'flex',
-        flexDirection: 'column',
-        height: 'auto',
-        minHeight: 'clamp(300px, 35vh, 400px)',
-        maxHeight: 'clamp(400px, 45vh, 450px)',
-        overflow: 'hidden',
-        width: '100%'
-      }}
     >
       {/* Terminal Header */}
       <div className={styles.header}>
@@ -256,18 +255,9 @@ export function TerminalWindow({
         <div 
           ref={linesContainerRef}
           className={styles.lines}
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            padding: 'clamp(0.75rem, 2vw, 1rem)',
-            fontFamily: '"Fira Code", "SF Mono", "Roboto Mono", monospace',
-            fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)',
-            lineHeight: 1.5,
-            color: '#e2e8f0',
-            scrollbarWidth: 'thin',
-            scrollbarColor: 'rgba(59, 130, 246, 0.3) transparent'
-          }}
+          role="log"
+          aria-live="polite"
+          aria-label="Terminal output"
         >
           {terminalLines}
           

@@ -1,28 +1,42 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Code, Cpu, Database, Server, Shield, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './AboutSection.module.css';
 
 const techStack = [
-  { name: 'AI/ML', icon: <Cpu size={24} />, color: '#3b82f6' },
-  { name: 'Cloud', icon: <Server size={24} />, color: '#8b5cf6' },
-  { name: 'Web3', icon: <Zap size={24} />, color: '#ec4899' },
-  { name: 'Blockchain', icon: <Database size={24} />, color: '#10b981' },
-  { name: 'Cybersecurity', icon: <Shield size={24} />, color: '#f59e0b' },
-  { name: 'DevOps', icon: <Code size={24} />, color: '#6366f1' },
+  { name: 'AI/ML', icon: <Cpu size={24} />, color: '#ff6347' }, // Front - red
+  { name: 'Web3', icon: <Zap size={24} />, color: '#36a2eb' }, // Back - blue
+  { name: 'Cloud', icon: <Server size={24} />, color: '#ffd700' }, // Right - yellow
+  { name: 'Blockchain', icon: <Database size={24} />, color: '#4bc0c0' }, // Left - green
+  { name: 'Cybersecurity', icon: <Shield size={24} />, color: '#9c66ff' }, // Top - purple
+  { name: 'DevOps', icon: <Code size={24} />, color: '#ff9f40' }, // Bottom - orange
 ];
 
 const AboutSection = () => {
   const [activeCube, setActiveCube] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [touchStart, setTouchStart] = useState(null);
-  const [rotation, setRotation] = useState({ x: -10, y: 15 });
+  const [rotation, setRotation] = useState({ x: 20, y: 20, z: 0 });
+  const lastTimeRef = useRef(0);
+  const rotationSpeedRef = useRef({ x: 0.3, y: 0.5, z: 0.2 });
   const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [focusedFace, setFocusedFace] = useState(null);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [isShowcasing, setIsShowcasing] = useState(true);
+  const [omnidirectionalSpin, setOmnidirectionalSpin] = useState(false);
   const sectionRef = useRef(null);
   const cubeRef = useRef(null);
   const rotationTimeout = useRef(null);
+  const animationRef = useRef(null);
+  const autoRotateRef = useRef(autoRotate);
+  const isDraggingRef = useRef(isDragging);
+  const isShowcasingRef = useRef(isShowcasing);
+  const omnidirectionalSpinRef = useRef(omnidirectionalSpin);
+  const targetRotationRef = useRef({ x: 0, y: 0, z: 0 });
+  const availableFacesRef = useRef(['front', 'back', 'right', 'left', 'top', 'bottom']);
+  const showcaseTimerRef = useRef(null);
 
   // Check if mobile on mount
   useEffect(() => {
@@ -35,93 +49,364 @@ const AboutSection = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  // Auto-rotate on desktop
+  // Update refs when state changes
   useEffect(() => {
-    if (isMobile || touchStart) return;
-    
-    let animationFrameId;
-    let lastTime = 0;
-    const rotationSpeed = 0.5; // Slower rotation speed
-    
-    const animate = (timestamp) => {
-      if (!lastTime) lastTime = timestamp;
-      const delta = timestamp - lastTime;
-      lastTime = timestamp;
-      
-      setRotation(prev => ({
-        ...prev,
-        y: (prev.y + rotationSpeed) % 360
-      }));
-      
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    
-    // Start auto-rotation after a delay
-    const startDelay = setTimeout(() => {
-      animationFrameId = requestAnimationFrame(animate);
-    }, 2000);
-    
-    return () => {
-      clearTimeout(startDelay);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      if (rotationTimeout.current) clearTimeout(rotationTimeout.current);
-    };
-  }, [isMobile, touchStart]);
+    autoRotateRef.current = autoRotate;
+  }, [autoRotate]);
 
-  // Get active face based on rotation
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
+
+  useEffect(() => {
+    isShowcasingRef.current = isShowcasing;
+  }, [isShowcasing]);
+
+  // Ref to store the showcase function
+  const showcaseNextFaceRef = useRef(null);
+
+  // Initialize showcase on mount
+  useEffect(() => {
+    // Start the showcase sequence after initial render
+    const initTimer = setTimeout(() => {
+      if (showcaseNextFaceRef.current) {
+        showcaseNextFaceRef.current();
+      }
+    }, 1000);
+    
+    return () => clearTimeout(initTimer);
+  }, []);
+
+  // Face rotation mappings - exactly like improved reference
+  const faceRotations = useMemo(() => ({
+    front: { x: 0, y: 0 },
+    back: { x: 0, y: 180 },
+    right: { x: 0, y: -90 },
+    left: { x: 0, y: 90 },
+    top: { x: -90, y: 0 },
+    bottom: { x: 90, y: 0 }
+  }), []);
+
+  // Helper functions for improved rotation
+  const calculateShortestRotation = useCallback((current, target) => {
+    const normalizeAngle = (angle) => {
+      angle = angle % 360;
+      if (angle > 180) angle -= 360;
+      if (angle < -180) angle += 360;
+      return angle;
+    };
+    const diff = normalizeAngle(target - current);
+    return current + diff;
+  }, []);
+
+  // Get random face for showcase
+  const getRandomFace = useCallback(() => {
+    if (availableFacesRef.current.length === 0) {
+      availableFacesRef.current = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+    }
+    const randomIndex = Math.floor(Math.random() * availableFacesRef.current.length);
+    const face = availableFacesRef.current[randomIndex];
+    availableFacesRef.current.splice(randomIndex, 1);
+    return face;
+  }, []);
+
+  // Showcase next face
+  const showcaseNextFace = useCallback(() => {
+    const face = getRandomFace();
+    const target = faceRotations[face];
+    
+    const current = rotation;
+    targetRotationRef.current = {
+      x: calculateShortestRotation(current.x, target.x),
+      y: calculateShortestRotation(current.y, target.y),
+      z: calculateShortestRotation(current.z, 0)
+    };
+    
+    setIsShowcasing(true);
+    setAutoRotate(true);
+    setOmnidirectionalSpin(false); // Start with transition phase
+    
+    // Phase 1: Smooth transition to target face (700ms for smoother arrival)
+    setTimeout(() => {
+      setOmnidirectionalSpin(true); // Start omnidirectional spin
+      
+      // Phase 2: Omnidirectional spin with smooth transition to target (5000ms)
+      // The animation logic now gradually transitions back to target during spin
+      setTimeout(() => {
+        setOmnidirectionalSpin(false); // Stop spin, should be very close to target
+        
+        // Phase 3: Static display (2500ms)
+        setTimeout(() => {
+          if (availableFacesRef.current.length === 0) {
+            availableFacesRef.current = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+          }
+          if (showcaseNextFaceRef.current) {
+            showcaseNextFaceRef.current();
+          }
+        }, 2500);
+        
+      }, 5000);
+      
+    }, 700);
+  }, [rotation, calculateShortestRotation, getRandomFace, faceRotations]);
+
+  // Update the ref when the function changes
+  useEffect(() => {
+    showcaseNextFaceRef.current = showcaseNextFace;
+  }, [showcaseNextFace]);
+
+  // Update omnidirectional spin ref
+  useEffect(() => {
+    omnidirectionalSpinRef.current = omnidirectionalSpin;
+  }, [omnidirectionalSpin]);
+
+// Time-based animation with throttled updates and smooth transitions
+  const animate = useCallback((timestamp) => {
+    if (autoRotateRef.current && !isDraggingRef.current) {
+      const deltaTime = timestamp - lastTimeRef.current;
+      // Throttle to ~30fps to prevent excessive updates
+      if (deltaTime >= 32) {
+        setRotation(prev => {
+          let newX = prev.x;
+          let newY = prev.y;
+          let newZ = prev.z;
+          
+          if (isShowcasingRef.current) {
+            if (!omnidirectionalSpinRef.current) {
+              // Phase 1: Smooth transition to target face
+              const speed = 0.15;
+              newX += (targetRotationRef.current.x - prev.x) * speed;
+              newY += (targetRotationRef.current.y - prev.y) * speed;
+              newZ += (targetRotationRef.current.z - prev.z) * speed;
+              
+              // Check if we've reached the target
+              const tolerance = 0.5;
+              if (Math.abs(targetRotationRef.current.x - newX) < tolerance &&
+                  Math.abs(targetRotationRef.current.y - newY) < tolerance &&
+                  Math.abs(targetRotationRef.current.z - newZ) < tolerance) {
+                newX = targetRotationRef.current.x;
+                newY = targetRotationRef.current.y;
+                newZ = targetRotationRef.current.z;
+              }
+            } else {
+              // Phase 2: Omnidirectional spin with smooth transition to target
+              const spinSpeed = 0.8;
+              const transitionSpeed = 0.05;
+              
+              // Add spin rotation
+              newX += 1.0 * spinSpeed;
+              newY += 1.5 * spinSpeed;
+              newZ += 0.5 * spinSpeed;
+              
+              // Gradually transition towards target (smooth end to spin)
+              newX += (targetRotationRef.current.x - newX) * transitionSpeed;
+              newY += (targetRotationRef.current.y - newY) * transitionSpeed;
+              newZ += (targetRotationRef.current.z - newZ) * transitionSpeed;
+            }
+          } else {
+            // Phase 3: Static display
+            // No rotation changes
+          }
+          
+          return { x: newX, y: newY, z: newZ };
+        });
+        lastTimeRef.current = timestamp;
+      }
+    }
+    animationRef.current = requestAnimationFrame(animate);
+  }, []);
+
+  useEffect(() => {
+    lastTimeRef.current = 0;
+    animationRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [animate]);
+
+  useEffect(() => {
+    if (!isMobile && !focusedFace) {
+      const startDelay = setTimeout(() => {
+        setAutoRotate(true);
+      }, 2000);
+      return () => clearTimeout(startDelay);
+    }
+  }, [isMobile, focusedFace]);
+
+  // Get active face based on exact target rotations
   const getActiveFace = (rot) => {
     // Normalize rotation to 0-360 degrees
     const y = ((rot.y % 360) + 360) % 360;
-    const x = rot.x || 0;
+    const x = ((rot.x % 360) + 360) % 360;
     
-    // Check top/bottom first
-    if (x > 45) return 4; // Top
-    if (x < -45) return 5; // Bottom
+    // Use exact target rotations from faceRotations
+    const targets = [
+      { x: 0, y: 0, index: 0 },     // Front
+      { x: 0, y: 180, index: 1 },  // Back
+      { x: 0, y: 270, index: 2 },  // Right (y: -90 = 270)
+      { x: 0, y: 90, index: 3 },   // Left
+      { x: 270, y: 0, index: 4 }, // Top (x: -90 = 270)
+      { x: 90, y: 0, index: 5 }   // Bottom
+    ];
     
-    // Then check side rotations
-    if (y >= 45 && y < 135) return 2; // Right
-    if (y >= 135 && y < 225) return 1; // Back
-    if (y >= 225 && y < 315) return 3; // Left
+    let closestIndex = 0;
+    let minDistance = Infinity;
     
-    return 0; // Front
+    // Find which target rotation is closest to current rotation
+    for (const target of targets) {
+      const xDiff = Math.min(
+        Math.abs(x - target.x),
+        360 - Math.abs(x - target.x)
+      );
+      const yDiff = Math.min(
+        Math.abs(y - target.y),
+        360 - Math.abs(y - target.y)
+      );
+      
+      const distance = xDiff + yDiff;
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = target.index;
+      }
+    }
+    
+    return closestIndex;
   };
+
+  // Update active cube based on rotation
+  useEffect(() => {
+    const activeFace = getActiveFace(rotation);
+    setActiveCube(activeFace);
+  }, [rotation]);
+
+  // Handle face click to focus
+  const handleFaceClick = useCallback((faceName) => {
+    if (isMobile) return;
+    
+    setFocusedFace(faceName);
+    setAutoRotate(false);
+    setIsShowcasing(false);
+    
+    // Clear any existing showcase timer
+    if (showcaseTimerRef.current) {
+      clearTimeout(showcaseTimerRef.current);
+      showcaseTimerRef.current = null;
+    }
+    
+    cubeRef.current?.classList.add('smooth');
+    const target = faceRotations[faceName];
+    
+    // Set target rotation for smooth transition
+    setRotation(prev => {
+      targetRotationRef.current = {
+        x: calculateShortestRotation(prev.x, target.x),
+        y: calculateShortestRotation(prev.y, target.y),
+        z: calculateShortestRotation(prev.z, 0)
+      };
+      return targetRotationRef.current;
+    });
+    
+    // Update active tech based on face
+    const faceIndex = ['front', 'back', 'right', 'left', 'top', 'bottom'].indexOf(faceName);
+    if (faceIndex !== -1) setActiveCube(faceIndex);
+    
+    // Remove smooth class after delay like reference
+    setTimeout(() => {
+      cubeRef.current?.classList.remove('smooth');
+    }, 500);
+  }, [isMobile, faceRotations, calculateShortestRotation]);
 
   // Handle mouse move for desktop rotation
-  const handleMouseMove = (e) => {
-    if (isMobile || !cubeRef.current) return;
+  const handleMouseMove = useCallback((e) => {
+    if (isMobile || !isDragging || focusedFace) return;
     
-    const rect = cubeRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const deltaX = e.movementX;
+    const deltaY = e.movementY;
     
-    // Calculate rotation based on mouse position
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = ((y - centerY) / centerY) * 15; // Reduced for more subtle effect
-    const rotateY = ((x - centerX) / centerX) * 15; // Reduced for more subtle effect
-    
-    setMousePosition({ x: rotateY, y: rotateX });
-    
-    // Update active tech based on rotation
-    const newActiveTech = getActiveFace({ x: rotateX, y: rotateY });
-    setActiveCube(newActiveTech);
-  };
+    setRotation(prev => ({
+      x: prev.x - deltaY,
+      y: prev.y + deltaX,
+      z: prev.z
+    }));
+  }, [isMobile, isDragging, focusedFace]);
 
-  // Handle mouse leave for desktop
-  const handleMouseLeave = () => {
-    if (isMobile) return;
-    setMousePosition({ x: 0, y: 0 });
-  };
+  // Handle mouse leave for desktop - do nothing like reference
+  const handleMouseLeave = useCallback(() => {
+    // Reference doesn't do anything on mouse leave
+  }, []);
+
+// Handle mouse down for drag
+  const handleMouseDown = useCallback((e) => {
+    if (isMobile || focusedFace) return;
+    setIsDragging(true);
+    setAutoRotate(false);
+    
+    // Set grabbing cursor like improved reference
+    if (cubeRef.current) {
+      cubeRef.current.style.cursor = 'grabbing';
+    }
+    e.stopPropagation();
+  }, [isMobile, focusedFace]);
+
+// Handle document mouse move for drag
+  const handleDocumentMouseMove = useCallback((e) => {
+    if (!isDragging || isMobile) return;
+    e.preventDefault();
+    
+    const deltaX = e.movementX;
+    const deltaY = e.movementY;
+    
+    setRotation(prev => ({
+      x: prev.x - deltaY * 0.5,
+      y: prev.y + deltaX * 0.5,
+      z: prev.z
+    }));
+  }, [isDragging, isMobile]);
+
+  // Handle document mouse up
+  const handleDocumentMouseUp = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Reset cursor like improved reference
+    if (cubeRef.current) {
+      cubeRef.current.style.cursor = 'pointer';
+    }
+    
+    if (!focusedFace) {
+      setAutoRotate(true);
+    }
+  }, [isDragging, focusedFace]);  // Handle click outside cube
+  const handleDocumentClick = useCallback((e) => {
+    if (cubeRef.current && cubeRef.current.contains(e.target)) return;
+    
+    setFocusedFace(null);
+    setAutoRotate(true);
+    setIsShowcasing(true);
+    cubeRef.current?.classList.add('smooth');
+    setTimeout(() => {
+      cubeRef.current?.classList.remove('smooth');
+      // Restart showcase sequence
+      availableFacesRef.current = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+      if (showcaseNextFaceRef.current) {
+        showcaseNextFaceRef.current();
+      }
+    }, 500);
+  }, []);
 
   // Touch event handlers
-  const handleTouchStart = (e) => {
+  const handleTouchStart = useCallback((e) => {
     if (!isMobile) return;
     const touch = e.touches[0];
     setTouchStart({ x: touch.clientX, y: touch.clientY });
-  };
+    setAutoRotate(false);
+  }, [isMobile]);
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = useCallback((e) => {
     if (!isMobile || !touchStart) return;
     e.preventDefault();
     
@@ -130,17 +415,19 @@ const AboutSection = () => {
     const deltaY = touch.clientY - touchStart.y;
     
     setRotation(prev => ({
-      x: Math.max(-90, Math.min(90, prev.x + deltaY * 0.5)),
-      y: prev.y + deltaX * 0.5
+      x: prev.x - deltaY * 0.5,
+      y: prev.y + deltaX * 0.5,
+      z: prev.z
     }));
     
     setTouchStart({ x: touch.clientX, y: touch.clientY });
-  };
+  }, [isMobile, touchStart]);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     if (!isMobile) return;
     setTouchStart(null);
-  };
+    setAutoRotate(true);
+  }, [isMobile]);
 
   // Add touch event listeners
   useEffect(() => {
@@ -156,75 +443,60 @@ const AboutSection = () => {
       cube.removeEventListener('touchmove', handleTouchMove);
       cube.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isMobile]);
+  }, [isMobile, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
-  // Rotate cube to specific face
-  const rotateCube = (direction) => {
-    if (rotationTimeout.current) clearTimeout(rotationTimeout.current);
+  // Add document event listeners for drag
+  useEffect(() => {
+    document.addEventListener('mousemove', handleDocumentMouseMove);
+    document.addEventListener('mouseup', handleDocumentMouseUp);
+    document.addEventListener('click', handleDocumentClick);
     
-    let newRotation = { ...rotation };
-    
-    if (direction === 'left') {
-      newRotation.y = ((newRotation.y + 90) % 360 + 360) % 360;
-    } else if (direction === 'right') {
-      newRotation.y = ((newRotation.y - 90) % 360 + 360) % 360;
-    }
-    
-    setRotation(newRotation);
-    
-    // Update active tech based on rotation
-    const newActiveTech = getActiveFace(newRotation);
-    setActiveCube(newActiveTech);
-  };
+    return () => {
+      document.removeEventListener('mousemove', handleDocumentMouseMove);
+      document.removeEventListener('mouseup', handleDocumentMouseUp);
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [handleDocumentMouseMove, handleDocumentMouseUp, handleDocumentClick]);
 
   return (
     <section 
       id="about" 
       className={styles.aboutSection} 
       ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* Animated background elements */}
-      <div className={styles.gridOverlay} />
-      <div className={styles.circleGlow} style={{
-        left: `${50 + mousePosition.x * 0.5}%`,
-        top: `${50 + mousePosition.y * 0.5}%`
-      }} />
-      
       <div className={styles.container}>
         {/* Left side - 3D Cube */}
         <div className={styles.cubeContainer}>
           <div 
             ref={cubeRef}
-            className={styles.cube}
+            className={`${styles.cube} ${focusedFace ? styles.smooth : ''}`}
+            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
             style={{
-              transform: `rotateX(${isMobile ? rotation.x + 'deg' : mousePosition.y + 'deg'}) 
-                         rotateY(${isMobile ? rotation.y + 'deg' : mousePosition.x + 'deg'})`,
+              transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`,
               touchAction: isMobile ? 'pan-y' : 'none',
-              transition: isMobile ? 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)' : 'transform 0.1s ease-out',
-              willChange: 'transform'
+              willChange: 'transform',
+              cursor: isMobile ? 'grab' : focusedFace ? 'default' : 'grab'
             }}
           >
-            {[0, 1, 2, 3, 4, 5].map((_, i) => (
-              <div 
-                key={i} 
-                className={`${styles.cubeFace} ${styles[`face${i + 1}`]}`}
-                style={{
-                  background: `linear-gradient(135deg, ${techStack[i].color}22, ${techStack[i].color}44)`,
-                  border: `1px solid ${techStack[i].color}55`,
-                  boxShadow: `0 0 20px ${techStack[i].color}33`
-                }}
-                onMouseEnter={() => setActiveCube(i)}
-              >
-                <div className={styles.techIcon} style={{ color: techStack[i].color }}>
-                  {techStack[i].icon}
+            {techStack.map((tech, i) => {
+              const faceNames = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+              const faceName = faceNames[i];
+              return (
+                <div 
+                  key={i} 
+                  className={`${styles.cubeFace} ${styles[`face${i + 1}`]}`}
+                  onClick={() => handleFaceClick(faceName)}
+                >
+                  <div className={styles.techIcon} style={{ color: tech.color }}>
+                    {tech.icon}
+                  </div>
+                  <span className={styles.techName} style={{ color: tech.color }}>
+                    {tech.name}
+                  </span>
                 </div>
-                <span className={styles.techName} style={{ color: techStack[i].color }}>
-                  {techStack[i].name}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           {/* Mobile Navigation */}
@@ -255,14 +527,14 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
         >
           <div className={styles.sectionHeader}>
-            <span className={styles.sectionSubtitle}>// ABOUT US</span>
+            <span className={styles.sectionSubtitle}>{'// ABOUT US'}</span>
             <h2 className={styles.sectionTitle}>Engineering the <span className={styles.highlight}>Future</span></h2>
           </div>
           
           <p className={styles.description}>
-            At Velvron Labs, we're not just building technology - we're crafting the digital future. 
-            Our team of elite engineers and visionaries work at the intersection of innovation and 
-            practicality, creating solutions that push boundaries.
+            {'At Velvron Labs, we\'re not just building technology - we\'re crafting the digital future. '}
+            {'Our team of elite engineers and visionaries work at the intersection of innovation and '}
+            {'practicality, creating solutions that push boundaries.'}
           </p>
           
           <div className={styles.activeTech}>

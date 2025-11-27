@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Spinning Cube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .scene {
+            width: 200px;
+            height: 200px;
+            perspective: 1000px;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear;
+        }
+
+        .cube.smooth {
+            transition: transform 0.5s ease-out;
+        }
+
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .face:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .front  { 
+            background: rgba(255, 99, 132, 0.5);
+            transform: rotateY(0deg) translateZ(100px); 
+        }
+        .back   { 
+            background: rgba(54, 162, 235, 0.5);
+            transform: rotateY(180deg) translateZ(100px); 
+        }
+        .right  { 
+            background: rgba(255, 206, 86, 0.5);
+            transform: rotateY(90deg) translateZ(100px); 
+        }
+        .left   { 
+            background: rgba(75, 192, 192, 0.5);
+            transform: rotateY(-90deg) translateZ(100px); 
+        }
+        .top    { 
+            background: rgba(153, 102, 255, 0.5);
+            transform: rotateX(90deg) translateZ(100px); 
+        }
+        .bottom { 
+            background: rgba(255, 159, 64, 0.5);
+            transform: rotateX(-90deg) translateZ(100px); 
+        }
+
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>Click a face to focus • Drag to rotate • Click outside to release</h2>
+    </div>
+
+    <div class="scene">
+        <div class="cube" id="cube">
+            <div class="face front" data-face="front">1</div>
+            <div class="face back" data-face="back">2</div>
+            <div class="face right" data-face="right">3</div>
+            <div class="face left" data-face="left">4</div>
+            <div class="face top" data-face="top">5</div>
+            <div class="face bottom" data-face="bottom">6</div>
+        </div>
+    </div>
+
+    <script>
+        const cube = document.getElementById('cube');
+        let rotX = 20;
+        let rotY = 20;
+        let rotZ = 0;
+        let autoRotate = true;
+        let isDragging = false;
+        let startX, startY;
+        let focusedFace = null;
+        let isShowcasing = false;
+        let targetRotX = 0;
+        let targetRotY = 0;
+        let targetRotZ = 0;
+
+        const faceRotations = {
+            front: { x: 0, y: 0 },
+            back: { x: 0, y: 180 },
+            right: { x: 0, y: -90 },
+            left: { x: 0, y: 90 },
+            top: { x: -90, y: 0 },
+            bottom: { x: 90, y: 0 }
+        };
+
+        let availableFaces = Object.keys(faceRotations);
+        let showcaseTimer = null;
+
+        function updateCube() {
+            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+        }
+
+        function getRandomFace() {
+            if (availableFaces.length === 0) {
+                availableFaces = Object.keys(faceRotations);
+            }
+            const randomIndex = Math.floor(Math.random() * availableFaces.length);
+            const face = availableFaces[randomIndex];
+            availableFaces.splice(randomIndex, 1);
+            return face;
+        }
+
+        function showcaseNextFace() {
+            const face = getRandomFace();
+            const target = faceRotations[face];
+            
+            targetRotX = shortestPath(rotX, target.x);
+            targetRotY = shortestPath(rotY, target.y);
+            targetRotZ = shortestPath(rotZ, 0);
+            
+            isShowcasing = true;
+            cube.classList.add('smooth');
+            
+            showcaseTimer = setTimeout(() => {
+                cube.classList.remove('smooth');
+                showcaseTimer = setTimeout(() => {
+                    showcaseNextFace();
+                }, 2000);
+            }, 500);
+        }
+
+        function animate() {
+            if (autoRotate && !isDragging) {
+                if (isShowcasing) {
+                    const speed = 0.1;
+                    rotX += (targetRotX - rotX) * speed;
+                    rotY += (targetRotY - rotY) * speed;
+                    rotZ += (targetRotZ - rotZ) * speed;
+                    
+                    if (Math.abs(targetRotX - rotX) < 0.1 && 
+                        Math.abs(targetRotY - rotY) < 0.1 && 
+                        Math.abs(targetRotZ - rotZ) < 0.1) {
+                        rotX = targetRotX;
+                        rotY = targetRotY;
+                        rotZ = targetRotZ;
+                    }
+                }
+                updateCube();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function normalizeAngle(angle) {
+            angle = angle % 360;
+            if (angle > 180) angle -= 360;
+            if (angle < -180) angle += 360;
+            return angle;
+        }
+
+        function shortestPath(current, target) {
+            const diff = normalizeAngle(target - current);
+            return current + diff;
+        }
+
+        cube.addEventListener('click', (e) => {
+            if (e.target.classList.contains('face')) {
+                e.stopPropagation();
+                const face = e.target.dataset.face;
+                focusedFace = face;
+                autoRotate = false;
+                
+                cube.classList.add('smooth');
+                const target = faceRotations[face];
+                
+                // Calculate shortest path to target rotation
+                rotX = shortestPath(rotX, target.x);
+                rotY = shortestPath(rotY, target.y);
+                rotZ = shortestPath(rotZ, 0);
+                
+                updateCube();
+                
+                setTimeout(() => {
+                    cube.classList.remove('smooth');
+                }, 500);
+            }
+        });
+
+        cube.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('face')) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                autoRotate = false;
+                isShowcasing = false;
+                if (showcaseTimer) {
+                    clearTimeout(showcaseTimer);
+                    showcaseTimer = null;
+                }
+                cube.classList.remove('smooth');
+                cube.style.cursor = 'grabbing';
+                e.stopPropagation();
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                rotY += deltaX * 0.5;
+                rotX -= deltaY * 0.5;
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                updateCube();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                cube.style.cursor = 'pointer';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!cube.contains(e.target)) {
+                focusedFace = null;
+                autoRotate = true;
+                isShowcasing = true;
+                availableFaces = Object.keys(faceRotations);
+                cube.classList.add('smooth');
+                setTimeout(() => {
+                    cube.classList.remove('smooth');
+                    showcaseNextFace();
+                }, 500);
+            }
+        });
+
+        updateCube();
+        animate();
+        
+        // Start the showcase
+        isShowcasing = true;
+        showcaseNextFace();
+    </script>
+</body>
+</html>

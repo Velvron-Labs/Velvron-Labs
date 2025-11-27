@@ -19,11 +19,11 @@ const useMediaQuery = (query) => {
     // Create event listener
     const listener = (e) => setMatches(e.matches);
     
-    // Add listener
-    media.addListener(listener);
+    // Use modern addEventListener instead of deprecated addListener
+    media.addEventListener('change', listener);
     
-    // Clean up
-    return () => media.removeListener(listener);
+    // Clean up with removeEventListener
+    return () => media.removeEventListener('change', listener);
   }, [query]);
 
   return matches;

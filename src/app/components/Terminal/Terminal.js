@@ -138,7 +138,7 @@ export function TerminalWindow({
     }
 
     // Start typing animation if conditions are met
-    if (typing && content.length > 0 && animate && (contentChanged || displayedLines.length === 0)) {
+    if (typing && content.length > 0 && animate) {
       let lineIndex = 0;
       let charIndex = 0;
       let timeoutId = null;
@@ -195,7 +195,7 @@ export function TerminalWindow({
       setDisplayedLines([...content]);
       setIsComplete(true);
     }
-  }, [typing, content, contentChanged, animate, displayedLines.length]);
+  }, [typing, content, contentChanged, animate]);
 
   // Memoized terminal lines to prevent unnecessary re-renders
   const terminalLines = useMemo(() => {

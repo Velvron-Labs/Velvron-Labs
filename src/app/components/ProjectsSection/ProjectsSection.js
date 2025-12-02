@@ -11,7 +11,7 @@ const projects = [
     title: "AI-Powered Analytics Platform",
     description: "A comprehensive analytics dashboard with real-time data visualization and predictive insights using machine learning models.",
     tags: ["React", "Node.js", "D3.js", "MongoDB", "TensorFlow.js"],
-    image: "/assets/project1.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: true,
     sourceUrl: "https://github.com/yourusername/analytics-platform"
@@ -21,7 +21,7 @@ const projects = [
     title: "E-commerce Solution",
     description: "A full-featured e-commerce platform with payment integration, inventory management, and admin dashboard.",
     tags: ["Next.js", "Stripe", "PostgreSQL", "Tailwind", "Redux"],
-    image: "/assets/project2.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: false,
     sourceUrl: ""
@@ -31,7 +31,7 @@ const projects = [
     title: "Blockchain Voting System",
     description: "A secure and transparent voting system built on Ethereum blockchain with smart contracts and IPFS for decentralized storage.",
     tags: ["Solidity", "Web3.js", "IPFS", "React", "Hardhat"],
-    image: "/assets/project3.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: true,
     sourceUrl: "https://github.com/yourusername/blockchain-voting"
@@ -41,7 +41,7 @@ const projects = [
     title: "AI Content Generator",
     description: "An AI-powered content generation tool that creates high-quality articles, blog posts, and marketing copy using GPT-4.",
     tags: ["Python", "FastAPI", "OpenAI API", "React", "MongoDB"],
-    image: "/assets/project4.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: true,
     sourceUrl: "https://github.com/yourusername/ai-content-generator"
@@ -51,7 +51,7 @@ const projects = [
     title: "Smart Home IoT Hub",
     description: "A centralized IoT hub for controlling and monitoring smart home devices with real-time data analytics.",
     tags: ["Raspberry Pi", "Node-RED", "MQTT", "React Native", "InfluxDB"],
-    image: "/assets/project5.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: true,
     sourceUrl: "https://github.com/yourusername/smart-home-hub"
@@ -61,7 +61,7 @@ const projects = [
     title: "AR Shopping Assistant",
     description: "An augmented reality mobile app that helps users visualize furniture in their home before purchasing.",
     tags: ["Unity", "ARKit", "ARCore", "Firebase", "Swift"],
-    image: "/assets/project6.jpg",
+    image: "/assets/placeholder-project.jpg",
     liveUrl: "#",
     sourceAvailable: false,
     sourceUrl: ""
@@ -145,7 +145,7 @@ const ProjectsSection = () => {
                     key={i} 
                     className={`${styles.particle} particle`}
                     style={{
-                      backgroundImage: 'url(/assets/particles.svg)',
+                      backgroundImage: 'url(/assets/particle.svg)',
                       backgroundSize: 'contain',
                       backgroundRepeat: 'no-repeat',
                       width: '24px',
@@ -161,6 +161,7 @@ const ProjectsSection = () => {
               </div>
               
               <div className={styles.projectImage}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={project.image} 
                   alt={project.title} 

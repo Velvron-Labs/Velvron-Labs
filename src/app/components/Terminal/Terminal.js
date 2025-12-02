@@ -195,7 +195,7 @@ export function TerminalWindow({
       setDisplayedLines([...content]);
       setIsComplete(true);
     }
-  }, [typing, content, contentChanged, animate]);
+  }, [typing, content, contentChanged, animate, displayedLines.length]);
 
   // Memoized terminal lines to prevent unnecessary re-renders
   const terminalLines = useMemo(() => {

@@ -76,12 +76,12 @@ const ServicesSection = () => {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
         >
-          <span className={styles.subtitle}>// OUR SERVICES</span>
+          <span className={styles.subtitle}>{"// OUR SERVICES"}</span>
           <h2 className={styles.title}>
             What We <span className={styles.highlight}>Build</span>
           </h2>
           <p className={styles.description}>
-            From concept to deployment, we deliver comprehensive technology solutions 
+            From concept to deployment, we deliver comprehensive technology solutions <br />
             that drive innovation and accelerate your business growth.
           </p>
         </motion.div>
@@ -139,7 +139,7 @@ const ServicesSection = () => {
         >
           <h3 className={styles.ctaTitle}>Ready to Start Your Project?</h3>
           <p className={styles.ctaDescription}>
-            Let's discuss how we can bring your vision to life with our expertise and innovation.
+            Let&apos;s discuss how we can bring your vision to life with our expertise and innovation.
           </p>
           <motion.button 
             className={styles.ctaButton}

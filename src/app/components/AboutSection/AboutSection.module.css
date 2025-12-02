@@ -404,6 +404,15 @@
 }
 
 @media (max-width: 640px) {
+  /* Hide 3D cube and its navigation on small mobile screens */
+  .cubeContainer {
+    display: none;
+  }
+
+  .cubeNav {
+    display: none;
+  }
+
   .aboutSection {
     padding: 7rem 1rem 8rem; /* Increased top padding for mobile */
   }

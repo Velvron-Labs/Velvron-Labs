@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { fadeIn } from '@/app/utils/animations';
-import { useIsMobile } from '@/app/utils/responsive';
 import { colors } from '@/app/config/theme';
 
 // Dynamically import Three.js components to avoid SSR issues
@@ -21,6 +20,9 @@ export default function HeroSection() {
   const scrollIndicatorRef = useRef(null);
 
   useEffect(() => {
+    // Capture ref to avoid it changing during cleanup
+    const scrollNode = scrollIndicatorRef.current;
+
     // Animate hero content
     const animations = [];
     
@@ -46,13 +48,13 @@ export default function HeroSection() {
     }
     
     // Scroll indicator animation
-    if (scrollIndicatorRef.current) {
+    if (scrollNode) {
       animations.push(
-        fadeIn(scrollIndicatorRef.current, 1, 1)
+        fadeIn(scrollNode, 1, 1)
       );
       
       // Bounce animation for scroll indicator
-      gsap.to(scrollIndicatorRef.current, {
+      gsap.to(scrollNode, {
         y: 10,
         repeat: -1,
         yoyo: true,
@@ -64,13 +66,11 @@ export default function HeroSection() {
     // Clean up animations
     return () => {
       animations.forEach(anim => anim.kill?.());
-      if (scrollIndicatorRef.current) {
-        gsap.killTweensOf(scrollIndicatorRef.current);
+      if (scrollNode) {
+        gsap.killTweensOf(scrollNode);
       }
     };
   }, []);
-
-  const isMobile = useIsMobile();
   
   return (
     <section 
@@ -81,12 +81,10 @@ export default function HeroSection() {
         color: colors.textSecondary,
       }}
     >
-      {/* 3D Background - Only render on desktop for performance */}
-      {!isMobile && (
-        <div className="absolute inset-0 z-0">
-          <DynamicThreeScene />
-        </div>
-      )}
+      {/* 3D Background */}
+      <div className="absolute inset-0 z-0">
+        <DynamicThreeScene />
+      </div>
       
       {/* Content Overlay */}
       <div className="container mx-auto px-4 z-10 relative">
@@ -118,7 +116,7 @@ export default function HeroSection() {
             animate={{ opacity: 0.8, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            Building tomorrow's technology today with cutting-edge solutions in AI, cloud, and automation.
+            Building tomorrow&apos;s technology today with cutting-edge solutions in AI, cloud, and automation.
           </motion.p>
           
           <motion.div 
@@ -165,21 +163,19 @@ export default function HeroSection() {
       </div>
       
       {/* Scroll Indicator - Only show on desktop */}
-      {!isMobile && (
+      <div 
+        ref={scrollIndicatorRef}
+        className="hidden md:flex absolute bottom-12 left-1/2 transform -translate-x-1/2 flex-col items-center"
+        style={{ color: colors.textTertiary }}
+      >
+        <span className="text-sm mb-2">Scroll Down</span>
         <div 
-          ref={scrollIndicatorRef}
-          className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-          style={{ color: colors.textTertiary }}
-        >
-          <span className="text-sm mb-2">Scroll Down</span>
-          <div 
-            className="w-px h-12"
-            style={{
-              background: `linear-gradient(to bottom, ${colors.primary}, transparent)`,
-            }}
-          ></div>
-        </div>
-      )}
+          className="w-px h-12"
+          style={{
+            background: `linear-gradient(to bottom, ${colors.primary}, transparent)`,
+          }}
+        ></div>
+      </div>
     </section>
   );
 }

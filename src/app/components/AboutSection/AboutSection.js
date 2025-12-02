@@ -408,7 +408,9 @@ const AboutSection = () => {
 
   const handleTouchMove = useCallback((e) => {
     if (!isMobile || !touchStart) return;
-    e.preventDefault();
+    if (e.cancelable) {
+      e.preventDefault();
+    }
     
     const touch = e.touches[0];
     const deltaX = touch.clientX - touchStart.x;

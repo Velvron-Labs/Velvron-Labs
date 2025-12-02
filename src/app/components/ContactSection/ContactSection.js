@@ -16,11 +16,11 @@ const ContactSection = () => {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.header}>
-            <span className={styles.subtitle}>// GET IN TOUCH</span>
-            <h2 className={styles.title}>Let's Build Something <span className={styles.highlight}>Amazing</span></h2>
+            <span className={styles.subtitle}>{"// GET IN TOUCH"}</span>
+            <h2 className={styles.title}>Let&apos;s Build Something <span className={styles.highlight}>Amazing</span></h2>
             <p className={styles.description}>
-              Have a project in mind or want to discuss potential opportunities? 
-              We'd love to hear from you. Drop us a message and let's create 
+              Have a project in mind or want to discuss potential opportunities? <br />
+              We&apos;d love to hear from you. Drop us a message and let&apos;s create <br />
               something extraordinary together.
             </p>
           </div>

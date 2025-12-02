@@ -2,12 +2,6 @@
 
 import Link from 'next/link';
 
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  themeColor: '#001233',
-};
-
 export default function NotFound() {
   return (
     <div style={{

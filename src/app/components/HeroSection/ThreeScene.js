@@ -136,7 +136,8 @@ const ThreeScene = () => {
   }, [performanceSettings.renderScale]);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const mountNode = mountRef.current;
+    if (!mountNode) return;
     
     const width = mountRef.current.clientWidth;
     const height = mountRef.current.clientHeight;
@@ -166,7 +167,7 @@ const ThreeScene = () => {
     renderer.current.domElement.style.width = `${width}px`;
     renderer.current.domElement.style.height = `${height}px`;
     
-    mountRef.current.appendChild(renderer.current.domElement);
+    mountNode.appendChild(renderer.current.domElement);
     
     // Create particle system
     particles.current = createParticleSystem();
@@ -174,7 +175,7 @@ const ThreeScene = () => {
     
     // Event listeners with passive option for better performance
     window.addEventListener('resize', handleResize, { passive: true });
-    mountRef.current.addEventListener('mousemove', handleMouseMove, { passive: true });
+    mountNode.addEventListener('mousemove', handleMouseMove, { passive: true });
     
     // Start animation loop
     frameId.current = requestAnimationFrame(animate);
@@ -188,15 +189,15 @@ const ThreeScene = () => {
       
       // Remove event listeners
       window.removeEventListener('resize', handleResize);
-      if (mountRef.current) {
-        mountRef.current.removeEventListener('mousemove', handleMouseMove);
+      if (mountNode) {
+        mountNode.removeEventListener('mousemove', handleMouseMove);
       }
       
       // Clean up Three.js objects with null checks
-      if (renderer.current && mountRef.current) {
+      if (renderer.current && mountNode) {
         try {
-          if (renderer.current.domElement && mountRef.current.contains(renderer.current.domElement)) {
-            mountRef.current.removeChild(renderer.current.domElement);
+          if (renderer.current.domElement && mountNode.contains(renderer.current.domElement)) {
+            mountNode.removeChild(renderer.current.domElement);
           }
           renderer.current.dispose();
         } catch (e) {

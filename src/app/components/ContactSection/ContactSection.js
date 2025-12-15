@@ -56,7 +56,7 @@ const ContactSection = () => {
           <div className="flex flex-col gap-8">
             <motion.div variants={itemVariants}>
               <span className="inline-block text-blue-400 font-bold text-sm tracking-[0.2em] mb-4 uppercase">
-                // Get In Touch
+                &#47;&#47; Get In Touch
               </span>
               <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-slate-50 to-slate-400">
                 Let&apos;s Build Something <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-violet-500">Amazing</span>

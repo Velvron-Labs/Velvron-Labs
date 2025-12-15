@@ -247,7 +247,7 @@ const ServicesSection = () => {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="inline-block text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4">// OUR SERVICES</span>
+          <span className="inline-block text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4">&#47;&#47; OUR SERVICES</span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             What We <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Build</span>
           </h2>
@@ -291,7 +291,7 @@ const ServicesSection = () => {
         >
           <h3 className="text-2xl font-bold mb-4">Ready to Start Your Project?</h3>
           <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
-            Let's discuss how we can bring your vision to life with our expertise and innovation.
+            Let&apos;s discuss how we can bring your vision to life with our expertise and innovation.
           </p>
           <motion.button
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all"

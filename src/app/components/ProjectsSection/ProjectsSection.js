@@ -194,7 +194,7 @@ const ProjectsSection = () => {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="inline-block text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4">// OUR PROJECTS</span>
+          <span className="inline-block text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4">&#47;&#47; OUR PROJECTS</span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Featured <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Work</span>
           </h2>

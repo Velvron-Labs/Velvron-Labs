@@ -1,115 +1,220 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MapPin, Mail, Phone, Twitter, Linkedin, Github } from 'lucide-react';
+import { 
+  MapPin, 
+  Mail, 
+  Phone, 
+  Twitter, 
+  Linkedin, 
+  Github, 
+  ArrowRight, 
+  Heart, 
+  Globe,
+  Shield,
+  FileText
+} from 'lucide-react';
 import Link from 'next/link';
-import styles from './Footer.module.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 50 },
+    },
+  };
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.container}>
-        {/* Top Section */}
-        <div className={styles.topSection}>
-          <div className={styles.brandInfo}>
-            <h3 className={styles.brandName}>Velvron Labs</h3>
-            <p className={styles.tagline}>Engineering the future, one line of code at a time.</p>
-            <div className={styles.socialLinks}>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                <Twitter size={20} />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <Linkedin size={20} />
-              </a>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <Github size={20} />
-              </a>
-            </div>
-          </div>
+    <footer className="relative bg-slate-950 pt-20 pb-10 overflow-hidden border-t border-slate-800/50">
+      {/* Background Glows */}
+      <div className="absolute top-0 left-1/4 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 translate-y-1/2 w-96 h-96 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className={styles.footerLinks}>
-            <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Company</h4>
-              <ul>
-                <li><Link href="/about">About Us</Link></li>
-                <li><Link href="/careers">Careers</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-                <li><Link href="/contact">Contact</Link></li>
-              </ul>
+      <motion.div 
+        className="container mx-auto px-4 relative z-10 max-w-7xl"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={containerVariants}
+      >
+        
+        {/* Top Section: Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          
+          {/* Brand Column */}
+          <motion.div variants={itemVariants} className="space-y-6">
+            <div>
+              <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                Velvron Labs
+              </h3>
+              <p className="mt-4 text-slate-400 leading-relaxed text-sm">
+                Engineering the future, one line of code at a time. We build digital experiences that empower businesses in Ghana and beyond.
+              </p>
             </div>
+            
+            <div className="flex gap-4">
+              <SocialIcon href="https://twitter.com" icon={<Twitter size={18} />} label="Twitter" />
+              <SocialIcon href="https://linkedin.com" icon={<Linkedin size={18} />} label="LinkedIn" />
+              <SocialIcon href="https://github.com" icon={<Github size={18} />} label="GitHub" />
+            </div>
+          </motion.div>
 
-            <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Services</h4>
-              <ul>
-                <li><Link href="/services/web-development">Web Development</Link></li>
-                <li><Link href="/services/mobile-apps">Mobile Apps</Link></li>
-                <li><Link href="/services/ai-ml">AI & ML</Link></li>
-                <li><Link href="/services/blockchain">Blockchain</Link></li>
-              </ul>
-            </div>
+          {/* Links Column 1: Company */}
+          <motion.div variants={itemVariants}>
+            <h4 className="text-lg font-semibold text-slate-100 mb-6 flex items-center gap-2">
+              <Globe size={18} className="text-blue-500" /> Company
+            </h4>
+            <ul className="space-y-3">
+              <FooterLink href="/about">About Us</FooterLink>
+              <FooterLink href="/careers">Careers</FooterLink>
+              <FooterLink href="/blog">Our Blog</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
+            </ul>
+          </motion.div>
 
-            <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Legal</h4>
-              <ul>
-                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link href="/terms-of-service">Terms of Service</Link></li>
-                <li><Link href="/cookies">Cookie Policy</Link></li>
-                <li><Link href="/gdpr">GDPR</Link></li>
-              </ul>
-            </div>
+          {/* Links Column 2: Services */}
+          <motion.div variants={itemVariants}>
+            <h4 className="text-lg font-semibold text-slate-100 mb-6 flex items-center gap-2">
+              <FileText size={18} className="text-violet-500" /> Services
+            </h4>
+            <ul className="space-y-3">
+              <FooterLink href="/services/web">Web Development</FooterLink>
+              <FooterLink href="/services/mobile">Mobile Solutions</FooterLink>
+              <FooterLink href="/services/ai">AI & Machine Learning</FooterLink>
+              <FooterLink href="/services/blockchain">Blockchain Tech</FooterLink>
+            </ul>
+          </motion.div>
 
-            <div className={styles.contactInfo}>
-              <h4 className={styles.linkGroupTitle}>Contact</h4>
-              <ul>
-                <li>
-                  <MapPin size={16} />
-                  <span>123 Innovation Drive, Tech City, TC 10101</span>
-                </li>
-                <li>
-                  <Mail size={16} />
-                  <a href="mailto:contact@velvronlabs.com">contact@velvronlabs.com</a>
-                </li>
-                <li>
-                  <Phone size={16} />
-                  <a href="tel:+15551234567">+1 (555) 123-4567</a>
-                </li>
-              </ul>
-            </div>
-          </div>
+          {/* Contact Column */}
+          <motion.div variants={itemVariants}>
+            <h4 className="text-lg font-semibold text-slate-100 mb-6 flex items-center gap-2">
+              <MapPin size={18} className="text-blue-500" /> Contact
+            </h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-slate-400 text-sm group">
+                <div className="mt-1 min-w-[20px] text-blue-500 group-hover:text-blue-400 transition-colors">
+                  <MapPin size={18} />
+                </div>
+                <span>8th Floor, One Airport Square, Airport City, Accra, Ghana</span>
+              </li>
+              <li className="flex items-center gap-3 text-slate-400 text-sm group">
+                <div className="min-w-[20px] text-blue-500 group-hover:text-blue-400 transition-colors">
+                  <Mail size={18} />
+                </div>
+                <a href="mailto:hello@velvronlabs.com" className="hover:text-white transition-colors">
+                  hello@velvronlabs.com
+                </a>
+              </li>
+              <li className="flex items-center gap-3 text-slate-400 text-sm group">
+                <div className="min-w-[20px] text-blue-500 group-hover:text-blue-400 transition-colors">
+                  <Phone size={18} />
+                </div>
+                <a href="tel:+233551234567" className="hover:text-white transition-colors">
+                  +233 (0) 55 123 4567
+                </a>
+              </li>
+            </ul>
+          </motion.div>
         </div>
 
         {/* Map Section */}
-        <div className={styles.mapContainer}>
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.2219901290355!2d-74.00369368400567!3d40.71312937933185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a23e28c1191%3A0x49f75d3281df052a!2s150%20Park%20Row%2C%20New%20York%2C%20NY%2010007!5e0!3m2!1sen!2sus!4v1644262070010!5m2!1sen!2sus"
-            width="100%"
-            height="300"
-            style={{ border: 0, borderRadius: '12px' }}
-            allowFullScreen=""
-            loading="lazy"
-            aria-hidden="false"
-            tabIndex="0"
+        <motion.div 
+          variants={itemVariants}
+          className="w-full h-64 md:h-80 rounded-2xl overflow-hidden border border-slate-800 relative group mb-16 shadow-2xl"
+        >
+          {/* Overlay to style map grayscale until hover */}
+          <div className="absolute inset-0 bg-slate-950/20 mix-blend-overlay z-10 pointer-events-none group-hover:bg-transparent transition-all duration-500" />
+          <div className="absolute inset-0 bg-slate-900/10 z-0" />
+          
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.970104116976!2d-0.1765809241460331!3d5.605333133499402!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9b7754117b43%3A0xc312450849266b61!2sOne%20Airport%20Square!5e0!3m2!1sen!2sgh!4v1700000000000!5m2!1sen!2sgh" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0, filter: 'grayscale(100%) invert(90%) contrast(85%)' }} 
+            className="group-hover:filter-none transition-all duration-700 ease-in-out"
+            allowFullScreen="" 
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Velvron Labs Location"
           ></iframe>
-        </div>
 
-        {/* Bottom Section */}
-        <div className={styles.bottomSection}>
-          <p className={styles.copyright}>
-            &copy; {currentYear} Velvron Labs. All rights reserved.
-          </p>
-          <div className={styles.legalLinks}>
-            <Link href="/privacy-policy">Privacy Policy</Link>
-            <span className={styles.divider}>•</span>
-            <Link href="/terms-of-service">Terms of Service</Link>
-            <span className={styles.divider}>•</span>
-            <Link href="/cookies">Cookie Policy</Link>
+          <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-700 text-xs text-slate-300 shadow-lg">
+            <span className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Based in Accra, Ghana
+            </span>
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+        {/* Bottom Bar */}
+        <motion.div 
+          variants={itemVariants}
+          className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm"
+        >
+          <p className="text-slate-500 flex items-center gap-1 text-center md:text-left">
+            &copy; {currentYear} Velvron Labs. Made with <Heart size={14} className="text-red-500 fill-red-500" /> in Ghana.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-slate-500">
+            <Link href="/privacy" className="hover:text-blue-400 transition-colors flex items-center gap-1.5">
+              <Shield size={14} /> Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-blue-400 transition-colors flex items-center gap-1.5">
+              <FileText size={14} /> Terms of Service
+            </Link>
+            <Link href="/cookies" className="hover:text-blue-400 transition-colors">
+              Cookie Policy
+            </Link>
+          </div>
+        </motion.div>
+
+      </motion.div>
     </footer>
   );
 };
+
+// Helper Component for Social Icons
+const SocialIcon = ({ href, icon, label }) => (
+  <a 
+    href={href} 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    aria-label={label}
+    className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-500 hover:-translate-y-1 transition-all duration-300"
+  >
+    {icon}
+  </a>
+);
+
+// Helper Component for Links
+const FooterLink = ({ href, children }) => (
+  <li>
+    <Link 
+      href={href} 
+      className="group flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-all duration-300 text-sm"
+    >
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-blue-500 transition-colors" />
+      <span className="group-hover:translate-x-1 transition-transform">{children}</span>
+    </Link>
+  </li>
+);
 
 export default Footer;

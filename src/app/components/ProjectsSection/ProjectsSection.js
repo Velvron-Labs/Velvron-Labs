@@ -1,252 +1,242 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, Code, X } from 'lucide-react';
-import styles from './ProjectsSection.module.css';
+import { Github, ExternalLink, ArrowRight, Code } from 'lucide-react';
 
 const projects = [
   {
     id: 1,
-    title: "AI-Powered Analytics Platform",
-    description: "A comprehensive analytics dashboard with real-time data visualization and predictive insights using machine learning models.",
-    tags: ["React", "Node.js", "D3.js", "MongoDB", "TensorFlow.js"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
-    sourceAvailable: true,
-    sourceUrl: "https://github.com/yourusername/analytics-platform"
+    title: "CareCore Health",
+    description: "A comprehensive healthcare platform featuring eye and ear tests, a medical marketplace, real-time chat with doctors, and notification system. This professional-grade application includes secure user authentication and a seamless user experience for both patients and healthcare providers.",
+    tags: ["React", "Firebase", "WebRTC", "Real-time"],
+    image: "/assets/carecore.png",
+    liveUrl: "https://carecore.vercel.app",
+    sourceAvailable: false,
+    sourceUrl: "",
+    type: "Healthcare",
+    date: "2025"
   },
   {
     id: 2,
-    title: "E-commerce Solution",
-    description: "A full-featured e-commerce platform with payment integration, inventory management, and admin dashboard.",
-    tags: ["Next.js", "Stripe", "PostgreSQL", "Tailwind", "Redux"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
+    title: "Elevate Resume",
+    description: "A sophisticated resume builder platform designed for professionals to create stunning, ATS-friendly resumes. Features advanced templates, real-time preview, export options in multiple formats, and professional design customization tools.",
+    tags: ["React", "Next.js", "TypeScript", "Tailwind CSS", "PDF Generation"],
+    image: "/assets/elevate-resume.jpg",
+    liveUrl: "https://elevate-resume.vercel.app",
     sourceAvailable: false,
-    sourceUrl: ""
+    sourceUrl: "",
+    type: "Productivity",
+    date: "2025"
   },
   {
     id: 3,
-    title: "Blockchain Voting System",
-    description: "A secure and transparent voting system built on Ethereum blockchain with smart contracts and IPFS for decentralized storage.",
-    tags: ["Solidity", "Web3.js", "IPFS", "React", "Hardhat"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
-    sourceAvailable: true,
-    sourceUrl: "https://github.com/yourusername/blockchain-voting"
+    title: "StudySphere",
+    description: "A full-stack learning and collaboration platform built with clean separation between frontend (Next.js PWA) and backend (Express + PostgreSQL + MongoDB). Features real-time messaging, notifications, PWA offline support, and modular architecture.",
+    tags: ["Next.js", "Express", "PostgreSQL", "MongoDB", "Socket.IO", "PWA"],
+    image: "/assets/studylanding.jpg",
+    liveUrl: false,
+    sourceAvailable: false,
+    sourceUrl: "",
+    type: "Education",
+    date: "2025"
   },
   {
     id: 4,
-    title: "AI Content Generator",
-    description: "An AI-powered content generation tool that creates high-quality articles, blog posts, and marketing copy using GPT-4.",
-    tags: ["Python", "FastAPI", "OpenAI API", "React", "MongoDB"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
-    sourceAvailable: true,
-    sourceUrl: "https://github.com/yourusername/ai-content-generator"
-  },
-  {
-    id: 5,
-    title: "Smart Home IoT Hub",
-    description: "A centralized IoT hub for controlling and monitoring smart home devices with real-time data analytics.",
-    tags: ["Raspberry Pi", "Node-RED", "MQTT", "React Native", "InfluxDB"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
-    sourceAvailable: true,
-    sourceUrl: "https://github.com/yourusername/smart-home-hub"
-  },
-  {
-    id: 6,
-    title: "AR Shopping Assistant",
-    description: "An augmented reality mobile app that helps users visualize furniture in their home before purchasing.",
-    tags: ["Unity", "ARKit", "ARCore", "Firebase", "Swift"],
-    image: "/assets/placeholder-project.jpg",
-    liveUrl: "#",
+    title: "Campus Sale",
+    description: "A comprehensive campus marketplace platform for students in Ghana to buy and sell items securely. Features escrow payment system, real-time messaging, and location-based services. Built with modern full-stack technologies for reliable performance.",
+    tags: ["Next.js", "Redis", "PostgreSQL", "MongoDB Atlas", "Escrow"],
+    image: "/assets/campussale.png",
+    liveUrl: false,
     sourceAvailable: false,
-    sourceUrl: ""
-  },
-  // Add more projects as needed
+    sourceUrl: "",
+    type: "Marketplace",
+    date: "2025"
+  }
 ];
 
-const ProjectsSection = () => {
-  const [hoveredProject, setHoveredProject] = useState(null);
-  const [tooltip, setTooltip] = useState({ show: false, message: '', x: 0, y: 0 });
-  const projectRefs = useRef([]);
-  
-  // Initialize particles for each project card
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      projectRefs.current = projectRefs.current.slice(0, projects.length);
-      
-      const handleMouseMove = (e) => {
-        if (hoveredProject !== null) {
-          const rect = projectRefs.current[hoveredProject]?.getBoundingClientRect();
-          if (rect) {
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const particles = document.querySelectorAll(`.project-${hoveredProject} .particle`);
-            
-            particles.forEach((particle, i) => {
-              const angle = (i / particles.length) * Math.PI * 2;
-              const distance = 50;
-              const offsetX = Math.cos(angle + Date.now() * 0.001) * distance;
-              const offsetY = Math.sin(angle + Date.now() * 0.001) * distance;
-              
-              particle.style.transform = `translate(${x + offsetX}px, ${y + offsetY}px)`;
-            });
-          }
-        }
-      };
-      
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    }
-  }, [hoveredProject]);
-
-  const showTooltip = (e, message) => {
-    setTooltip({
-      show: true,
-      message,
-      x: e.clientX,
-      y: e.clientY - 40
-    });
-  };
-
-  const hideTooltip = () => {
-    setTooltip(prev => ({ ...prev, show: false }));
-  };
-
+const DiagonalProjectCard = ({ project, index }) => {
   return (
-    <section className={styles.projectsSection} id="projects">
-      <div className={styles.container}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Our <span className={styles.highlight}>Projects</span></h2>
-          <p className={styles.sectionSubtitle}>Explore our latest work and innovative solutions</p>
-        </div>
+    <motion.div
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
+      className="relative w-full rounded-3xl overflow-hidden bg-neutral-900 shadow-2xl border border-neutral-800 group"
+    >
+      {/* BACKGROUND GLOW */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className={styles.projectsGrid}>
+      <div className="relative flex flex-col md:flex-row h-full min-h-[450px]">
+
+        {/* LEFT: IMAGE SECTION */}
+        <motion.div
+          variants={{
+            rest: { clipPath: "polygon(0 0, 100% 0, 85% 100%, 0% 100%)" },
+            hover: { clipPath: "polygon(0 0, 100% 0, 95% 100%, 0% 100%)" },
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute inset-0 md:static w-full md:w-[60%] h-64 md:h-auto z-10 bg-neutral-800 overflow-hidden"
+        >
+          {/* Image Scaling Effect */}
+          <motion.img
+            variants={{
+              rest: { scale: 1 },
+              hover: { scale: 1.1 },
+            }}
+            transition={{ duration: 0.5 }}
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+            onError={(e) => {
+              e.target.src = '/assets/placeholder-project.jpg';
+            }}
+          />
+
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+        </motion.div>
+
+        {/* RIGHT: CONTENT SECTION */}
+        <div className="relative z-20 flex-1 flex flex-col justify-center p-8 md:pl-4 md:pr-10 mt-[220px] md:mt-0 bg-neutral-900 md:bg-transparent">
+
+          {/* Header: Type & Date */}
+          <div className="flex items-center gap-3 mb-4">
+            <span className="px-3 py-1 text-xs font-bold tracking-wider text-indigo-400 uppercase bg-indigo-500/10 rounded-full border border-indigo-500/20">
+              {project.type}
+            </span>
+            <span className="text-neutral-500 text-xs font-medium">{project.date}</span>
+          </div>
+
+          {/* Title with hover arrow interaction */}
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 flex items-center gap-2">
+            {project.title}
+            <motion.span
+              variants={{
+                rest: { x: -10, opacity: 0 },
+                hover: { x: 0, opacity: 1 },
+              }}
+            >
+              <ArrowRight className="w-6 h-6 text-indigo-400" />
+            </motion.span>
+          </h3>
+
+          {/* Description */}
+          <p className="text-neutral-400 text-sm md:text-base leading-relaxed mb-6">
+            {project.description}
+          </p>
+
+          {/* Tech Stack Tags */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {project.tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 text-xs text-neutral-300 bg-neutral-800 rounded border border-neutral-700 select-none hover:border-neutral-500 transition-colors"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4">
+            {project.liveUrl && project.liveUrl !== false ? (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.45)]"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Live Demo
+              </a>
+            ) : (
+              <button className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-neutral-500 rounded-xl font-bold text-sm border border-neutral-700 cursor-not-allowed">
+                <ExternalLink className="w-4 h-4" />
+                Coming Soon
+              </button>
+            )}
+
+            {project.sourceAvailable ? (
+              <a
+                href={project.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-white rounded-xl font-bold text-sm border border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 transition-all"
+              >
+                <Github className="w-4 h-4" />
+                Source
+              </a>
+            ) : (
+              <button className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-neutral-500 rounded-xl font-bold text-sm border border-neutral-700 cursor-not-allowed">
+                <Code className="w-4 h-4" />
+                Private
+              </button>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const ProjectsSection = () => {
+  return (
+    <section id="projects" className="relative w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 text-white overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-radial-gradient from-blue-900/20 via-transparent to-purple-900/20"></div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8 }}
+        >
+          <span className="inline-block text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4">// OUR PROJECTS</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Featured <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Work</span>
+          </h2>
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            Explore our latest projects and innovative solutions that push the boundaries of technology.
+          </p>
+        </motion.div>
+
+        {/* Projects Grid - Single column */}
+        <div className="grid grid-cols-1 gap-12">
           {projects.map((project, index) => (
-            <motion.div 
+            <motion.div
               key={project.id}
-              ref={el => projectRefs.current[index] = el}
-              className={`${styles.projectCard} project-${index}`}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              onMouseEnter={() => setHoveredProject(index)}
-              onMouseLeave={() => setHoveredProject(null)}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              {/* Particle Background */}
-              <div className={styles.particlesContainer}>
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`${styles.particle} particle`}
-                    style={{
-                      backgroundImage: 'url(/assets/particle.svg)',
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      width: '24px',
-                      height: '24px',
-                      position: 'absolute',
-                      opacity: 0.7,
-                      transition: 'transform 0.3s ease-out, opacity 0.3s ease',
-                      pointerEvents: 'none',
-                      zIndex: 1
-                    }}
-                  />
-                ))}
-              </div>
-              
-              <div className={styles.projectImage}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  onError={(e) => {
-                    e.target.src = '/assets/placeholder-project.jpg';
-                  }}
-                />
-              </div>
-              
-              <div className={styles.projectContent}>
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-                <div className={styles.tags}>
-                  {project.tags.map(tag => (
-                    <span key={tag} className={styles.tag}>{tag}</span>
-                  ))}
-                </div>
-                
-                <div className={styles.projectLinks}>
-                  {project.liveUrl && (
-                    <a 
-                      href={project.liveUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className={`${styles.projectLink} ${styles.liveLink}`}
-                      aria-label="Live Demo"
-                    >
-                      <ExternalLink size={18} />
-                      <span>Live Demo</span>
-                    </a>
-                  )}
-                  
-                  {project.sourceAvailable ? (
-                    <a 
-                      href={project.sourceUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className={`${styles.projectLink} ${styles.sourceLink}`}
-                      aria-label="View Source Code"
-                    >
-                      <Github size={18} />
-                      <span>Source</span>
-                    </a>
-                  ) : (
-                    <button 
-                      className={`${styles.projectLink} ${styles.disabledLink}`}
-                      onMouseEnter={(e) => showTooltip(e, 'Source code not available for this project')}
-                      onMouseLeave={hideTooltip}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setTooltip({
-                          show: true,
-                          message: 'Source code not available for this project',
-                          x: e.clientX,
-                          y: e.clientY - 40
-                        });
-                        setTimeout(() => setTooltip(prev => ({ ...prev, show: false })), 2000);
-                      }}
-                      aria-label="Source code not available"
-                    >
-                      <Code size={18} />
-                      <span>Source</span>
-                    </button>
-                  )}
-                </div>
-              </div>
+              <DiagonalProjectCard project={project} index={index} />
             </motion.div>
           ))}
         </div>
-      </div>
-      
-      {/* Tooltip */}
-      {tooltip.show && (
-        <div 
-          className={styles.tooltip}
-          style={{
-            left: `${tooltip.x}px`,
-            top: `${tooltip.y}px`,
-            transform: 'translateX(-50%)'
-          }}
+
+        {/* View More CTA */}
+        <motion.div
+          className="text-center mt-16"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
-          {tooltip.message}
-          <span className={styles.tooltipArrow}></span>
-        </div>
-      )}
+          <p className="text-slate-400 mb-6">Want to see more of our work?</p>
+          <motion.button
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            View All Projects
+            <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </motion.div>
+      </div>
     </section>
   );
 };

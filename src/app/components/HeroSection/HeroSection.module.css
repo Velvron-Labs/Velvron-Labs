@@ -57,6 +57,13 @@
   white-space: nowrap;
 }
 
+.rocketIcon {
+  display: inline-flex;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 .title {
   font-size: clamp(2.25rem, 6vw, 3.75rem);
   font-weight: 800;
@@ -176,6 +183,7 @@
   gap: clamp(2rem, 4vw, 3rem);
   padding-top: 2rem;
   margin-top: 1rem;
+  margin-bottom: 20px;
   border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 
@@ -447,21 +455,28 @@
   .heroContent {
     max-width: 1600px;
   }
-  
+
   .heroGrid {
     gap: 5rem;
   }
-  
+
   .title {
     font-size: 4.5rem;
   }
-  
+
   .subtitle {
     font-size: 1.5rem;
   }
-  
+
   .terminalWrapper {
     min-height: 500px;
+  }
+}
+
+/* Hide terminal on small screens */
+@media (max-width: 570px) {
+  .terminalWrapper {
+    display: none;
   }
 }
 

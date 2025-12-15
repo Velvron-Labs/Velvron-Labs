@@ -16,7 +16,6 @@ import {
   Linkedin,
   Twitter
 } from 'lucide-react';
-import styles from './Navbar.module.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,12 +71,18 @@ const Navbar = () => {
   if (!isMounted) return null;
 
   return (
-    <header className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
-      <div className={styles.container}>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-[1000] h-16 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] backdrop-blur-[20px] ${
+        scrolled 
+          ? 'bg-slate-900/95 border-b border-slate-400/10 shadow-[0_4px_20px_rgba(0,0,0,0.1)]' 
+          : 'bg-transparent border-b border-transparent'
+      }`}
+    >
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-12 w-full h-full flex items-center justify-between">
         {/* Logo */}
         <motion.a 
           href="#home" 
-          className={styles.logo}
+          className="flex items-center gap-2 cursor-pointer transition-transform duration-200 hover:scale-105"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -87,14 +92,14 @@ const Navbar = () => {
             alt="Velvron Labs Logo"
             width={40}
             height={40}
-            className={styles.logoIcon}
+            className="w-10 h-10 rounded-lg object-cover"
           />
-          <span className={styles.logoText}>Velvron Labs</span>
+          <span className="text-xl font-bold text-white leading-none">Velvron Labs</span>
         </motion.a>
 
-        {/* Desktop Navigation */}
-        <nav className={styles.desktopNav}>
-          <ul className={styles.navList}>
+        {/* Desktop Navigation - Hidden below 917px, Flex above 917px */}
+        <nav className="hidden min-[917px]:flex items-center gap-8">
+          <ul className="flex items-center gap-8 list-none m-0 p-0">
             {navLinks.map((link, index) => (
               <motion.li
                 key={link.name}
@@ -104,13 +109,21 @@ const Navbar = () => {
               >
                 <a 
                   href={link.href}
-                  className={`${styles.navLink} ${link.name === 'Contact' ? styles.ctaButton : ''}`}
+                  className={`flex items-center gap-2 text-sm font-medium transition-all duration-200 py-2 relative group ${
+                    link.name === 'Contact' 
+                      ? 'bg-gradient-to-br from-blue-500 to-violet-500 text-white !px-6 !py-3 rounded-lg hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(59,130,246,0.3)]' 
+                      : 'text-slate-400 hover:text-white hover:-translate-y-[1px]'
+                  }`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick(link.href);
                   }}
                 >
-                  {link.name !== 'Contact' && <span className={styles.navIcon}>{getNavIcon(link.name)}</span>}
+                  {link.name !== 'Contact' && (
+                    <span className="w-4 h-4 text-slate-500 transition-colors duration-200 group-hover:text-blue-500">
+                      {getNavIcon(link.name)}
+                    </span>
+                  )}
                   <span>{link.name === 'Contact' ? 'Contact Us' : link.name}</span>
                   {link.name === 'Contact' && <Mail size={16} />}
                 </a>
@@ -119,9 +132,9 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - Flex below 917px, Hidden above 917px */}
         <motion.button
-          className={styles.menuButton}
+          className="flex min-[917px]:hidden items-center justify-center w-10 h-10 text-white bg-white/10 rounded-lg cursor-pointer transition-all duration-200 hover:bg-white/20 border-none"
           onClick={() => setIsOpen(!isOpen)}
           whileTap={{ scale: 0.95 }}
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
@@ -133,52 +146,60 @@ const Navbar = () => {
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className={styles.mobileMenu}
+              className="fixed top-16 right-0 w-full md:w-[400px] bg-slate-900/98 backdrop-blur-[20px] border-l border-b border-slate-400/10 overflow-hidden z-[999]"
               initial={{ opacity: 0, x: '100%' }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'tween' }}
             >
-              <div className={styles.mobileNav}>
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(link.href);
-                    }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`${styles.mobileNavLink} ${link.name === 'Contact' ? styles.ctaButton : ''}`}
-                  >
-                    {getNavIcon(link.name)}
-                    <span>{link.name === 'Contact' ? 'Contact Us' : link.name}</span>
-                  </motion.a>
-                ))}
-              </div>
+              <div className="p-6 flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mb-6">
+                  {navLinks.map((link, index) => (
+                    <motion.a
+                      key={link.name}
+                      href={link.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(link.href);
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`flex items-center gap-3 font-medium py-3 transition-colors duration-200 ${
+                        link.name === 'Contact'
+                          ? 'bg-gradient-to-br from-blue-500 to-violet-500 text-white px-6 rounded-lg hover:shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:-translate-y-0.5'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <span className={`w-5 h-5 ${link.name !== 'Contact' ? 'text-blue-500' : ''}`}>
+                        {getNavIcon(link.name)}
+                      </span>
+                      <span>{link.name === 'Contact' ? 'Contact Us' : link.name}</span>
+                    </motion.a>
+                  ))}
+                </div>
 
-              <div className={styles.mobileSocialSection}>
-                <p className={styles.mobileSocialTitle}>Connect with us</p>
-                <div className={styles.mobileSocialLinks}>
-                  {socialLinks.map((social) => {
-                    const Icon = social.icon;
-                    return (
-                      <motion.a
-                        key={social.name}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                        whileHover={{ y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        aria-label={social.name}
-                      >
-                        <Icon size={20} />
-                      </motion.a>
-                    );
-                  })}
+                <div className="pt-4 border-t border-slate-400/10">
+                  <p className="text-sm text-slate-500 mb-3">Connect with us</p>
+                  <div className="flex gap-4">
+                    {socialLinks.map((social) => {
+                      const Icon = social.icon;
+                      return (
+                        <motion.a
+                          key={social.name}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-500 p-2 rounded-lg transition-all duration-200 hover:text-blue-500 hover:bg-blue-500/10 hover:-translate-y-[1px]"
+                          whileHover={{ y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          aria-label={social.name}
+                        >
+                          <Icon size={20} />
+                        </motion.a>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </motion.div>

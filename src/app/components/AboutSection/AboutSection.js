@@ -14,8 +14,48 @@ const techStack = [
   { name: 'DevOps', icon: <Code size={24} />, color: '#ff9f40' }, // Bottom - orange
 ];
 
+// Helper function to get active face based on rotation
+const getActiveFace = (rot) => {
+  // Normalize rotation to 0-360 degrees
+  const y = ((rot.y % 360) + 360) % 360;
+  const x = ((rot.x % 360) + 360) % 360;
+
+  // Use exact target rotations from faceRotations
+  const targets = [
+    { x: 0, y: 0, index: 0 },     // Front
+    { x: 0, y: 180, index: 1 },  // Back
+    { x: 0, y: 270, index: 2 },  // Right (y: -90 = 270)
+    { x: 0, y: 90, index: 3 },   // Left
+    { x: 270, y: 0, index: 4 }, // Top (x: -90 = 270)
+    { x: 90, y: 0, index: 5 }   // Bottom
+  ];
+
+  let closestIndex = 0;
+  let minDistance = Infinity;
+
+  // Find which target rotation is closest to current rotation
+  for (const target of targets) {
+    const xDiff = Math.min(
+      Math.abs(x - target.x),
+      360 - Math.abs(x - target.x)
+    );
+    const yDiff = Math.min(
+      Math.abs(y - target.y),
+      360 - Math.abs(y - target.y)
+    );
+
+    const distance = xDiff + yDiff;
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestIndex = target.index;
+    }
+  }
+
+  return closestIndex;
+};
+
 const AboutSection = () => {
-  const [activeCube, setActiveCube] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [rotation, setRotation] = useState({ x: 20, y: 20, z: 0 });
   const lastTimeRef = useRef(0);
@@ -203,9 +243,6 @@ const AboutSection = () => {
               newY += (targetRotationRef.current.y - newY) * transitionSpeed;
               newZ += (targetRotationRef.current.z - newZ) * transitionSpeed;
             }
-          } else {
-            // Phase 3: Static display
-            // No rotation changes
           }
           
           return { x: newX, y: newY, z: newZ };
@@ -213,7 +250,10 @@ const AboutSection = () => {
         lastTimeRef.current = timestamp;
       }
     }
-    animationRef.current = requestAnimationFrame(animate);
+    
+    if (animationRef.current) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
   }, []);
 
   useEffect(() => {
@@ -236,52 +276,9 @@ const AboutSection = () => {
     }
   }, [isMobile, focusedFace]);
 
-  // Get active face based on exact target rotations
-  const getActiveFace = (rot) => {
-    // Normalize rotation to 0-360 degrees
-    const y = ((rot.y % 360) + 360) % 360;
-    const x = ((rot.x % 360) + 360) % 360;
-    
-    // Use exact target rotations from faceRotations
-    const targets = [
-      { x: 0, y: 0, index: 0 },     // Front
-      { x: 0, y: 180, index: 1 },  // Back
-      { x: 0, y: 270, index: 2 },  // Right (y: -90 = 270)
-      { x: 0, y: 90, index: 3 },   // Left
-      { x: 270, y: 0, index: 4 }, // Top (x: -90 = 270)
-      { x: 90, y: 0, index: 5 }   // Bottom
-    ];
-    
-    let closestIndex = 0;
-    let minDistance = Infinity;
-    
-    // Find which target rotation is closest to current rotation
-    for (const target of targets) {
-      const xDiff = Math.min(
-        Math.abs(x - target.x),
-        360 - Math.abs(x - target.x)
-      );
-      const yDiff = Math.min(
-        Math.abs(y - target.y),
-        360 - Math.abs(y - target.y)
-      );
-      
-      const distance = xDiff + yDiff;
-      
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestIndex = target.index;
-      }
-    }
-    
-    return closestIndex;
-  };
 
-  // Update active cube based on rotation
-  useEffect(() => {
-    const activeFace = getActiveFace(rotation);
-    setActiveCube(activeFace);
-  }, [rotation]);
+  // Calculate active cube based on rotation
+  const activeCube = useMemo(() => getActiveFace(rotation), [rotation]);
 
   // Handle face click to focus
   const handleFaceClick = useCallback((faceName) => {
@@ -310,9 +307,6 @@ const AboutSection = () => {
       return targetRotationRef.current;
     });
     
-    // Update active tech based on face
-    const faceIndex = ['front', 'back', 'right', 'left', 'top', 'bottom'].indexOf(faceName);
-    if (faceIndex !== -1) setActiveCube(faceIndex);
     
     // Remove smooth class after delay like reference
     setTimeout(() => {

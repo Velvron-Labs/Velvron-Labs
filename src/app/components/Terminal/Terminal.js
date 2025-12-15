@@ -110,6 +110,7 @@ export function TerminalWindow({
   const animationId = useRef(null);
   const contentKey = useRef('');
   const lastContent = useRef([]);
+  const isAnimatingRef = useRef(false);
 
   // Reset state when content changes
   const contentChanged = useMemo(() => {
@@ -127,7 +128,10 @@ export function TerminalWindow({
     if (animationId.current) {
       cancelAnimationFrame(animationId.current);
     }
-    
+
+    // Prevent multiple animations
+    if (isAnimatingRef.current) return;
+
     if (contentChanged) {
       // Reset state when content changes
       setDisplayedLines([]);
@@ -135,10 +139,12 @@ export function TerminalWindow({
       setCurrentChar(0);
       setIsComplete(false);
       lastContent.current = [...content];
+      isAnimatingRef.current = false;
     }
 
     // Start typing animation if conditions are met
     if (typing && content.length > 0 && animate) {
+      isAnimatingRef.current = true;
       let lineIndex = 0;
       let charIndex = 0;
       let timeoutId = null;
@@ -146,6 +152,7 @@ export function TerminalWindow({
       const typeNextChar = () => {
         if (lineIndex >= content.length) {
           setIsComplete(true);
+          isAnimatingRef.current = false;
           return;
         }
 
@@ -154,7 +161,7 @@ export function TerminalWindow({
         if (charIndex <= currentLineContent.length) {
           const partialLine = currentLineContent.substring(0, charIndex);
           
-          setDisplayedLines(prev => {
+          setDisplayedLines((prev) => {
             const newLines = [...prev];
             while (newLines.length <= lineIndex) {
               newLines.push('');
@@ -189,6 +196,7 @@ export function TerminalWindow({
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
+        isAnimatingRef.current = false;
       };
     } else if (!typing || content.length === 0 || !animate) {
       // Show all content immediately if not animating

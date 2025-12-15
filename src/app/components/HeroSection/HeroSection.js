@@ -3,6 +3,7 @@
 import { useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'framer-motion';
+import { Rocket } from 'lucide-react';
 import styles from './HeroSection.module.css';
 import { TerminalWindow } from '../Terminal/Terminal';
 
@@ -118,7 +119,7 @@ const HeroSection = () => {
               className={styles.badge}
               variants={itemVariants}
             >
-              <span>🚀 Ready to Launch</span>
+              <span><Rocket size={16} className={styles.rocketIcon} /> Ready to Launch</span>
             </motion.div>
             
             <motion.h1 variants={itemVariants} className={styles.title}>

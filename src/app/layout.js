@@ -3,27 +3,58 @@ import './styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const siteUrl = 'https://velvronlabs.vercel.app';
+const siteTitle = 'Velvron Labs - Engineering the Future';
+const siteDescription = 'Building tomorrow\'s technology today with cutting-edge solutions in AI, cloud, and automation.';
+const siteImage = '/assets/Logo.jpg';
+
 export const metadata = {
-  title: 'Velvron Labs - Engineering the Future',
-  description: 'Building tomorrow\'s technology today with cutting-edge solutions in AI, cloud, and automation.',
+  title: siteTitle,
+  description: siteDescription,
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/assets/favicon.svg',
   },
   openGraph: {
     type: 'website',
-    url: 'https://velvronlabs.vercel.app/',
-    title: 'Velvron Labs - Engineering the Future',
-    description: 'Building tomorrow\'s technology today with cutting-edge solutions in AI, cloud, and automation.',
-    images: [{
-      url: '/og-image.jpg',
-    }],
+    locale: 'en_US',
+    url: siteUrl,
+    siteName: 'Velvron Labs',
+    title: siteTitle,
+    description: siteDescription,
+    images: [
+      {
+        url: siteImage,
+        width: 1200,
+        height: 630,
+        alt: 'Velvron Labs Logo',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    url: 'https://velvronlabs.vercel.app/',
-    title: 'Velvron Labs - Engineering the Future',
-    description: 'Building tomorrow\'s technology today with cutting-edge solutions in AI, cloud, and automation.',
-    images: ['/og-image.jpg'],
+    title: siteTitle,
+    description: siteDescription,
+    images: [siteImage],
+    creator: '@velvronlabs',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    // Add your Google Search Console verification ID if you have one
+    // google: 'your-google-verification-code',
   },
 };
 

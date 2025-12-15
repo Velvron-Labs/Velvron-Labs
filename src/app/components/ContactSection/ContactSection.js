@@ -3,17 +3,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Mail, Phone, Send, Loader2 } from 'lucide-react';
+import { siteConfig } from '@/app/config/site';
 
 const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+    // FormSubmit will handle the submission
+    // We just need to set the loading state
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    console.log('Form submitted');
+    // The actual submission is handled by FormSubmit
+    // We'll let the form submit naturally
   };
 
   // Animation variants
@@ -72,17 +72,17 @@ const ContactSection = () => {
               <ContactInfoItem 
                 icon={<MapPin size={24} />}
                 title="Our Location"
-                details="8th Floor, One Airport Square, Airport City, Accra, Ghana"
+                details={siteConfig.contact.location}
               />
               <ContactInfoItem 
                 icon={<Mail size={24} />}
                 title="Email Us"
-                details="hello@velvronlabs.com"
+                details={siteConfig.contact.email}
               />
               <ContactInfoItem 
                 icon={<Phone size={24} />}
                 title="Call Us"
-                details="+233 (0) 55 123 4567"
+                details={siteConfig.contact.phone}
               />
             </motion.div>
           </div>
@@ -96,7 +96,17 @@ const ContactSection = () => {
               {/* Subtle sheen effect on form hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
-              <form onSubmit={handleSubmit} className="flex flex-col gap-6 relative z-10">
+              <form 
+                action={`https://formsubmit.co/${encodeURIComponent(siteConfig.contact.email)}`} 
+                method="POST"
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-6 relative z-10"
+              >
+                {/* FormSubmit hidden fields */}
+                <input type="hidden" name="_subject" value="New contact from website" />
+                <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="_next" value={`${typeof window !== 'undefined' ? window.location.origin : ''}/thank-you`} />
+                <input type="hidden" name="_captcha" value="false" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputGroup name="name" placeholder="Your Name" type="text" />
                   <InputGroup name="email" placeholder="Your Email" type="email" />

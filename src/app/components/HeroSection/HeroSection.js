@@ -156,7 +156,7 @@ const HeroSection = () => {
             
             <motion.div variants={itemVariants} className={styles.statsContainer}>
               <div className={styles.statItem}>
-                <div className={styles.statNumber}>100+</div>
+                <div className={styles.statNumber}>50+</div>
                 <div className={styles.statLabel}>Projects</div>
               </div>
               <div className={styles.statItem}>

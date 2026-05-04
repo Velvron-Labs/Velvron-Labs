@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, ExternalLink, ArrowRight, Code } from 'lucide-react';
 import Image from 'next/image';
@@ -59,7 +59,7 @@ const projects = [
 ];
 
 // Card uses CSS group-hover only — no framer variants to avoid hydration issues
-const DiagonalProjectCard = ({ project }) => (
+const DiagonalProjectCard = ({ project, isMobile = false }) => (
   <div className="relative w-full rounded-3xl overflow-hidden bg-neutral-900 shadow-2xl border border-neutral-800 group glass-card">
     {/* Shimmer sweep effect */}
     <motion.div 
@@ -90,7 +90,7 @@ const DiagonalProjectCard = ({ project }) => (
       </div>
 
       {/* Content */}
-      <div className="relative z-20 flex-1 flex flex-col justify-center p-8 md:pl-4 md:pr-10 mt-[220px] md:mt-0 bg-neutral-900 md:bg-transparent">
+      <div className="relative z-20 flex-1 flex flex-col justify-center p-6 md:p-8 md:pl-4 md:pr-10 mt-[200px] md:mt-0 bg-neutral-900 md:bg-transparent">
         <div className="flex items-center gap-3 mb-4">
           <span className="px-3 py-1 text-xs font-bold tracking-wider text-indigo-400 uppercase bg-indigo-500/10 rounded-full border border-indigo-500/20">
             {project.type}
@@ -126,7 +126,7 @@ const DiagonalProjectCard = ({ project }) => (
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors"
+              className={`flex items-center gap-2 px-4 md:px-6 py-3 bg-white text-black rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors ${isMobile ? 'touch-manipulation' : ''}`}
             >
               <ExternalLink className="w-4 h-4" />
               Live Demo
@@ -134,9 +134,9 @@ const DiagonalProjectCard = ({ project }) => (
           ) : (
             <motion.button 
               onClick={() => alert('Coming soon!')}
-              className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-neutral-300 rounded-xl font-bold text-sm border border-neutral-700 transition-all touch-manipulation"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 }}
-              whileTap={{ scale: 0.96 }}
+              className={`flex items-center gap-2 px-4 md:px-6 py-3 bg-neutral-800 text-neutral-300 rounded-xl font-bold text-sm border border-neutral-700 transition-all ${isMobile ? 'touch-manipulation' : ''}`}
+              whileHover={!isMobile ? { scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 } : {}}
+              whileTap={isMobile ? { scale: 0.96 } : { scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               role="button"
               aria-label="Coming soon project">
@@ -150,9 +150,9 @@ const DiagonalProjectCard = ({ project }) => (
               href={project.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-white rounded-xl font-bold text-sm border border-neutral-700 transition-all"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 }}
-              whileTap={{ scale: 0.96 }}
+              className={`flex items-center gap-2 px-4 md:px-6 py-3 bg-neutral-800 text-white rounded-xl font-bold text-sm border border-neutral-700 transition-all ${isMobile ? 'touch-manipulation' : ''}`}
+              whileHover={!isMobile ? { scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 } : {}}
+              whileTap={isMobile ? { scale: 0.96 } : { scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
               <Github className="w-4 h-4" />
               Source
@@ -160,9 +160,9 @@ const DiagonalProjectCard = ({ project }) => (
           ) : (
             <motion.button 
               onClick={() => alert('Source code is private')}
-              className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-neutral-300 rounded-xl font-bold text-sm border border-neutral-700 transition-all touch-manipulation"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 }}
-              whileTap={{ scale: 0.96 }}
+              className={`flex items-center gap-2 px-4 md:px-6 py-3 bg-neutral-800 text-neutral-300 rounded-xl font-bold text-sm border border-neutral-700 transition-all ${isMobile ? 'touch-manipulation' : ''}`}
+              whileHover={!isMobile ? { scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 } : {}}
+              whileTap={isMobile ? { scale: 0.96 } : { scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               role="button"
               aria-label="Private source code">
@@ -226,6 +226,20 @@ const addRipple = (e) => {
 const ProjectsSection = () => {
   const revealRef = useReveal();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect mobile devices
+    const checkMobile = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                            window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -267,18 +281,22 @@ const ProjectsSection = () => {
         </p>
       </motion.div>
 
-      {/* Cards — animate not whileInView, alternating slide direction */}
+      {/* Cards — mobile-optimized animations */}
       <div className="grid grid-cols-1 gap-12">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
             initial={{ opacity: 0, x: index % 2 === 0 ? -60 : 60 }}
             animate={{ opacity: 1, x: 0 }}
-            whileHover={{ 
+            whileHover={!isMobile ? { 
               y: -6, 
               boxShadow: '0 0 40px rgba(122,77,255,0.25), 0 20px 60px rgba(0,0,0,0.4)', 
               borderColor: 'rgba(122,77,255,0.4)' 
-            }}
+            } : {}}
+            whileTap={isMobile ? { 
+              scale: 0.98,
+              boxShadow: '0 0 30px rgba(122,77,255,0.2)' 
+            } : {}}
             transition={{ 
               type: 'spring', 
               stiffness: 300, 
@@ -287,10 +305,10 @@ const ProjectsSection = () => {
               delay: index * 0.12,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className={`reveal-up`}
+            className={`reveal-up ${isMobile ? 'touch-manipulation' : ''}`}
             data-delay={index + 1}
           >
-            <DiagonalProjectCard project={project} index={index} />
+            <DiagonalProjectCard project={project} index={index} isMobile={isMobile} />
           </motion.div>
         ))}
       </div>
@@ -305,9 +323,9 @@ const ProjectsSection = () => {
         <p className="text-slate-400 mb-6">Want to see more of our work?</p>
         <motion.button
           onClick={(e) => { addRipple(e); openModal(); }}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all"
-          whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 }}
-          whileTap={{ scale: 0.96 }}
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all touch-manipulation"
+          whileHover={!isMobile ? { scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 } : {}}
+          whileTap={isMobile ? { scale: 0.96 } : { scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           View All Projects

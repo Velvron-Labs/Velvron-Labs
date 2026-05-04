@@ -20,7 +20,7 @@ const CodeRain = dynamic(() => import('../MatrixRain/MatrixRain'), {
   loading: () => null,
 });
 
-// ProjectsSection — ssr:false (uses browser APIs)
+// ProjectsSection — optimized for mobile compatibility
 const ProjectsSection = dynamic(
   () => import('../ProjectsSection/ProjectsSection'),
   {

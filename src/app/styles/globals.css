@@ -636,11 +636,132 @@ body::after {
     filter: blur(30px) !important;
     opacity: 0.7;
   }
+  
+  /* Better touch targets for mobile */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve scroll performance on mobile */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+    width: 100vw;
+  }
+  
+  /* Better text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Ensure animations work on mobile */
+  .reveal-up.in-view,
+  .reveal-left.in-view,
+  .reveal-right.in-view,
+  .reveal-scale.in-view {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Touch-friendly hover states */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Fix cube box animation issues on mobile */
+  [style*="preserve-3d"] {
+    transform-style: flat !important;
+  }
+  
+  /* Prevent animation glitches on mobile */
+  .group:hover .group-hover\:translate-x-12,
+  .group:hover .group-hover\:-translate-y-4,
+  .group:hover .group-hover\:rotate-12,
+  .group:hover .group-hover\:translate-x-6,
+  .group:hover .group-hover\:-translate-y-8,
+  .group:hover .group-hover\:rotate-6,
+  .group:hover .group-hover\:-translate-y-12 {
+    transform: none !important;
+  }
+  
+  /* Smooth animations for mobile */
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+  
+  /* Reduce motion on mobile for better performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Enhanced mobile viewport handling */
+@viewport {
+  width: device-width;
+  initial-scale: 1.0;
+  maximum-scale: 5.0;
+  user-scalable: yes;
+}
+
+/* Better mobile browser compatibility */
+@-moz-document url-prefix() {
+  /* Firefox specific fixes */
+  body {
+    scrollbar-width: thin;
+  }
+}
+
+/* Safari iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Fix iOS Safari viewport height */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Chrome mobile fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: .001dpcm) {
+  /* Chrome specific adjustments */
+  .glass-card {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
 }
 
 /* Reduced motion respect */
 @media (prefers-reduced-motion: reduce) {
   [data-orb] {
     animation: none !important;
+  }
+  
+  .marquee-track-left,
+  .marquee-track-right {
+    animation: none !important;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

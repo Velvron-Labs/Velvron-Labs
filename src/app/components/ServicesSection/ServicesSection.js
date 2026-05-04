@@ -39,7 +39,7 @@ const useTilt = () => {
 // ==================================================================================
 // 1. THE NEON ORBITAL (FRONTEND) - Enhanced with float and glow
 // ==================================================================================
-const OrbitalSkill = () => {
+const OrbitalSkill = ({ isMobile = false }) => {
   const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useTilt();
   
   const tech = [
@@ -52,16 +52,20 @@ const OrbitalSkill = () => {
 
   return (
     <motion.div 
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      whileHover={{ 
+      style={{ rotateX: isMobile ? 0 : rotateX, rotateY: isMobile ? 0 : rotateY, transformStyle: "preserve-3d" }}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      onMouseLeave={isMobile ? undefined : handleMouseLeave}
+      whileHover={!isMobile ? { 
         y: -6, 
         boxShadow: '0 0 40px rgba(122,77,255,0.25), 0 20px 60px rgba(0,0,0,0.4)', 
         borderColor: 'rgba(122,77,255,0.4)' 
-      }}
+      } : {}}
+      whileTap={isMobile ? {
+        scale: 0.95,
+        boxShadow: '0 0 30px rgba(122,77,255,0.2)'
+      } : {}}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative w-72 h-72 flex items-center justify-center group cursor-grab active:cursor-grabbing"
+      className={`relative w-56 md:w-72 h-56 md:h-72 flex items-center justify-center group ${isMobile ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'}`}
     >
       {/* Shimmer sweep effect */}
       <motion.div 
@@ -80,10 +84,10 @@ const OrbitalSkill = () => {
       {/* Central Core */}
       <motion.div 
         style={{ translateZ: 50 }}
-        className="relative z-10 w-24 h-24 bg-gradient-to-br from-neutral-800 to-black rounded-3xl border border-white/10 flex items-center justify-center shadow-2xl"
+        className="relative z-10 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-neutral-800 to-black rounded-2xl md:rounded-3xl border border-white/10 flex items-center justify-center shadow-2xl"
       >
-        <Globe className="w-10 h-10 text-blue-400 animate-pulse" />
-        <div className="absolute inset-0 bg-blue-400/5 rounded-3xl blur-xl group-hover:blur-2xl transition-all" />
+        <Globe className="w-6 md:w-10 h-6 md:h-10 text-blue-400 animate-pulse" />
+        <div className="absolute inset-0 bg-blue-400/5 rounded-2xl md:rounded-3xl blur-xl group-hover:blur-2xl transition-all" />
       </motion.div>
 
       {/* Floating Icons */}
@@ -91,12 +95,12 @@ const OrbitalSkill = () => {
         <motion.div
           key={i}
           style={{ translateZ: 80 }}
-          className={`absolute ${item.pos} p-3 bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl group-hover:scale-110 transition-transform`}
+          className={`absolute ${item.pos} p-2 md:p-3 bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-xl md:rounded-2xl shadow-xl group-hover:scale-110 transition-transform`}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: i * 0.1 }}
         >
-          <item.icon size={20} style={{ color: item.color }} />
+          <item.icon size={isMobile ? 16 : 20} style={{ color: item.color }} />
         </motion.div>
       ))}
     </motion.div>
@@ -106,16 +110,20 @@ const OrbitalSkill = () => {
 // ==================================================================================
 // 2. DATA STREAM TERMINAL (BACKEND) - Matrix-style data pulses
 // ==================================================================================
-const TerminalSkill = () => {
+const TerminalSkill = ({ isMobile = false }) => {
   return (
     <motion.div 
-      whileHover={{ 
+      whileHover={!isMobile ? { 
         y: -6, 
         boxShadow: '0 0 40px rgba(122,77,255,0.25), 0 20px 60px rgba(0,0,0,0.4)', 
         borderColor: 'rgba(122,77,255,0.4)' 
-      }}
+      } : {}}
+      whileTap={isMobile ? {
+        scale: 0.95,
+        boxShadow: '0 0 30px rgba(122,77,255,0.2)'
+      } : {}}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative w-80 group glass-card"
+      className={`relative w-64 md:w-80 group glass-card ${isMobile ? 'touch-manipulation' : ''}`}
     >
       {/* Shimmer sweep effect */}
       <motion.div 
@@ -125,7 +133,7 @@ const TerminalSkill = () => {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       />
       <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-800 rounded-xl blur opacity-20 group-hover:opacity-50 transition duration-1000"></div>
-      <div className="group w-80 bg-black rounded-lg overflow-hidden border border-neutral-800 font-mono text-sm relative shadow-lg">
+      <div className={`group w-64 md:w-80 bg-black rounded-lg overflow-hidden border border-neutral-800 font-mono text-sm relative shadow-lg ${isMobile ? 'text-xs' : ''}`}>
         <div className="h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
           <div className="flex gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -134,7 +142,7 @@ const TerminalSkill = () => {
           </div>
           <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest">system.node_v2</span>
         </div>
-        <div className="p-5 font-mono text-[12px] space-y-3">
+        <div className="p-3 md:p-5 font-mono text-[10px] md:text-[12px] space-y-2 md:space-y-3">
           <div className="flex gap-2 text-green-400">
             <span className="shrink-0 text-white/30">$</span>
             <span className="animate-typing overflow-hidden whitespace-nowrap">npm run deploy:cluster</span>
@@ -149,14 +157,14 @@ const TerminalSkill = () => {
                     className="w-full h-full bg-gradient-to-r from-transparent via-green-500 to-transparent" 
                 />
             </div>
-            <p className="text-[10px] text-neutral-600">Checking Kubernetes pods...</p>
-            <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5">
+            <p className="text-[8px] md:text-[10px] text-neutral-600">Checking Kubernetes pods...</p>
+            <div className="grid grid-cols-2 gap-1 md:gap-2 mt-2 md:mt-4 pt-2 md:pt-4 border-t border-white/5">
                 <div className="bg-white/5 p-2 rounded border border-white/5 flex items-center gap-2">
-                    <Database size={12} className="text-emerald-500" />
+                    <Database size={isMobile ? 10 : 12} className="text-emerald-500" />
                     <span>PostgreSQL</span>
                 </div>
                 <div className="bg-white/5 p-2 rounded border border-white/5 flex items-center gap-2">
-                    <Cpu size={12} className="text-emerald-500" />
+                    <Cpu size={isMobile ? 10 : 12} className="text-emerald-500" />
                     <span>Redis</span>
                 </div>
             </div>
@@ -170,16 +178,20 @@ const TerminalSkill = () => {
 // ==================================================================================
 // 3. LAYERED DEPTH (DESIGN) - Exploding layers on hover
 // ==================================================================================
-const CardDeckSkill = () => {
+const CardDeckSkill = ({ isMobile = false }) => {
   return (
     <motion.div
-      whileHover={{ 
+      whileHover={!isMobile ? { 
         y: -6, 
         boxShadow: '0 0 40px rgba(122,77,255,0.25), 0 20px 60px rgba(0,0,0,0.4)', 
         borderColor: 'rgba(122,77,255,0.4)' 
-      }}
+      } : {}}
+      whileTap={isMobile ? {
+        scale: 0.95,
+        boxShadow: '0 0 30px rgba(122,77,255,0.2)'
+      } : {}}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative text-center overflow-hidden rounded-3xl p-10 md:p-12 group cursor-pointer glass-card"
+      className={`relative text-center overflow-hidden rounded-3xl p-6 md:p-10 md:p-12 group cursor-pointer glass-card ${isMobile ? 'touch-manipulation' : ''}`}
     >
       {/* Shimmer sweep effect */}
       <motion.div 
@@ -191,52 +203,68 @@ const CardDeckSkill = () => {
       {/* Background Glow */}
       <div className="absolute inset-0 bg-purple-500/20 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       
-      {/* Enhanced 3D Card Deck */}
-      <div className="group relative h-64 w-60 [perspective:1000px] mx-auto" style={{ transformStyle: 'preserve-3d' }}>
-        {/* Back Card (Tool 3) */}
+      {/* Enhanced 3D Card Deck - Mobile Optimized */}
+      <div className={`group relative h-48 md:h-64 w-48 md:w-60 mx-auto ${isMobile ? '' : '[perspective:1000px]'}`} style={{ transformStyle: isMobile ? 'flat' : 'preserve-3d' }}>
+        {/* Back Card (Tool 3) - Mobile Optimized */}
         <motion.div 
-          className="absolute inset-0 rounded-2xl bg-neutral-800 border border-neutral-700 shadow-xl transition-all duration-500 ease-out group-hover:translate-x-12 group-hover:-translate-y-4 group-hover:rotate-12 flex items-center justify-center"
-          style={{ transformStyle: 'preserve-3d' }}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          className={`absolute inset-0 rounded-2xl bg-neutral-800 border border-neutral-700 shadow-xl flex items-center justify-center ${
+            isMobile 
+              ? 'transform-none' 
+              : 'transition-all duration-500 ease-out group-hover:translate-x-12 group-hover:-translate-y-4 group-hover:rotate-12'
+          }`}
+          style={{ transformStyle: isMobile ? 'flat' : 'preserve-3d' }}
+          whileHover={isMobile ? { scale: 1.02 } : { scale: 1.05 }}
+          transition={{ type: 'spring', stiffness: isMobile ? 200 : 400, damping: 25 }}
         >
           <Box className="w-10 h-10 text-neutral-600" />
         </motion.div>
 
-        {/* Middle Card (Tool 2) */}
+        {/* Middle Card (Tool 2) - Mobile Optimized */}
         <motion.div 
-          className="absolute inset-0 rounded-2xl bg-neutral-800 border border-neutral-600 shadow-xl transition-all duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-8 group-hover:rotate-6 flex items-center justify-center"
-          style={{ transformStyle: 'preserve-3d' }}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          className={`absolute inset-0 rounded-2xl bg-neutral-800 border border-neutral-600 shadow-xl flex items-center justify-center ${
+            isMobile 
+              ? 'transform-none' 
+              : 'transition-all duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-8 group-hover:rotate-6'
+          }`}
+          style={{ transformStyle: isMobile ? 'flat' : 'preserve-3d' }}
+          whileHover={isMobile ? { scale: 1.02 } : { scale: 1.05 }}
+          transition={{ type: 'spring', stiffness: isMobile ? 200 : 400, damping: 25 }}
         >
           <Database className="w-10 h-10 text-neutral-500" />
         </motion.div>
 
-        {/* Front Card (Main Skill) */}
+        {/* Front Card (Main Skill) - Mobile Optimized */}
         <motion.div 
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-neutral-950 border border-white/20 shadow-2xl transition-all duration-500 group-hover:-translate-y-12"
-          style={{ transformStyle: 'preserve-3d' }}
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          className={`absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-neutral-950 border border-white/20 shadow-2xl ${
+            isMobile 
+              ? 'transform-none' 
+              : 'transition-all duration-500 group-hover:-translate-y-12'
+          }`}
+          style={{ transformStyle: isMobile ? 'flat' : 'preserve-3d' }}
+          whileHover={isMobile ? { scale: 1.01 } : { scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: isMobile ? 200 : 400, damping: 25 }}
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
           <motion.div 
             className="p-4 bg-purple-500/10 rounded-full mb-4 border border-purple-500/20"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            whileHover={isMobile ? { scale: 1.02 } : { scale: 1.1, rotate: 5 }}
+            transition={{ type: 'spring', stiffness: isMobile ? 150 : 300, damping: 20 }}
           >
             <Server className="w-8 h-8 text-purple-400" />
           </motion.div>
-          <h3 className="text-xl font-bold text-white tracking-tighter">UX/UI Design</h3>
+          <h3 className="text-lg md:text-xl font-bold text-white tracking-tighter">UX/UI Design</h3>
           <p className="text-[10px] text-neutral-500 mt-1 uppercase tracking-widest">User Experience</p>
 
-          {/* Hidden List revealed on hover */}
+          {/* Hidden List revealed on hover - Mobile Optimized */}
           <motion.div 
-            className="absolute bottom-4 left-0 w-full px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"
-            initial={{ y: 10 }}
+            className={`absolute bottom-2 md:bottom-4 left-0 w-full px-2 md:px-4 ${
+              isMobile 
+                ? 'opacity-100' 
+                : 'opacity-0 group-hover:opacity-100'
+            } transition-opacity duration-500 delay-100`}
+            initial={{ y: isMobile ? 0 : 10 }}
             whileHover={{ y: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            transition={{ type: 'spring', stiffness: isMobile ? 200 : 400, damping: 25 }}
           >
             <div className="flex justify-center gap-2">
               {['Figma', 'Sketch', 'XD'].map((tool, index) => (
@@ -244,8 +272,8 @@ const CardDeckSkill = () => {
                   key={tool} 
                   className="text-[10px] uppercase font-bold bg-neutral-800 px-2 py-1 rounded text-neutral-300 border border-neutral-700"
                   initial={{ opacity: 0, scale: 0.8 }}
-                  whileHover={{ opacity: 1, scale: 1.1 }}
-                  transition={{ delay: index * 0.1, type: 'spring', stiffness: 400, damping: 25 }}
+                  whileHover={isMobile ? { scale: 1.02 } : { opacity: 1, scale: 1.1 }}
+                  transition={{ delay: index * 0.1, type: 'spring', stiffness: isMobile ? 150 : 400, damping: 25 }}
                 >
                   {tool}
                 </motion.span>
@@ -311,6 +339,20 @@ const addRipple = (e) => {
 
 const ServicesSection = () => {
   const revealRef = useReveal();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Detect mobile devices
+    const checkMobile = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                            window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const services = [
     { title: 'Frontend Architecture', desc: 'Crafting pixel-perfect, hyper-fluid interfaces that defy the standard.', component: OrbitalSkill },
@@ -344,13 +386,17 @@ const ServicesSection = () => {
               key={i}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ 
+              whileHover={!isMobile ? { 
                 y: -6, 
                 boxShadow: '0 0 40px rgba(122,77,255,0.25), 0 20px 60px rgba(0,0,0,0.4)', 
                 borderColor: 'rgba(122,77,255,0.4)' 
-              }}
+              } : {}}
+              whileTap={isMobile ? {
+                scale: 0.98,
+                boxShadow: '0 0 30px rgba(122,77,255,0.2)'
+              } : {}}
               transition={{ delay: i * 0.2, type: 'spring', stiffness: 300, damping: 20 }}
-              className={`flex flex-col items-center group reveal-up glass-card`}
+              className={`flex flex-col items-center group reveal-up glass-card ${isMobile ? 'touch-manipulation' : ''}`}
               data-delay={i + 1}
             >
               {/* Shimmer sweep effect */}
@@ -360,19 +406,19 @@ const ServicesSection = () => {
                 whileHover={{ backgroundPosition: '200% 0' }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
               />
-              <div className="h-[300px] flex items-center justify-center mb-12">
-                <s.component />
+              <div className="h-[250px] md:h-[300px] flex items-center justify-center mb-8 md:mb-12">
+                <s.component isMobile={isMobile} />
               </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors tracking-tight">{s.title}</h3>
-                <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-[280px]">{s.desc}</p>
+              <div className="text-center px-4">
+                <h3 className="text-xl md:text-2xl font-bold mb-4 group-hover:text-blue-400 transition-colors tracking-tight">{s.title}</h3>
+                <p className="text-neutral-500 text-sm leading-relaxed mb-6 md:mb-8 max-w-[280px]">{s.desc}</p>
                 
                 <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={!isMobile ? { scale: 1.05, boxShadow: '0 0 30px rgba(122,77,255,0.5)', y: -2 } : {}}
+                  whileTap={isMobile ? { scale: 0.96 } : { scale: 0.96 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   onClick={(e) => { addRipple(e); }}
-                  className="px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white hover:text-black transition-all text-xs font-bold uppercase tracking-widest"
+                  className={`px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white hover:text-black transition-all text-xs font-bold uppercase tracking-widest ${isMobile ? 'touch-manipulation' : ''}`}
                 >
                   Configure Project
                 </motion.button>
